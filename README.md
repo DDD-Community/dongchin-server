@@ -1,7 +1,6 @@
-# dongchin-server
+# Dongchin - Server
 
-# Framework
+### 📌FrameWork
 
-```
-Nest JS Framework
-```
+- NestJS
+- TypeScript
