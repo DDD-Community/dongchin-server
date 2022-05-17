@@ -1,2 +1,7 @@
 # dongchin-server
-DDD - 7기 Android 2팀 - 동친
+
+# Framework
+
+```
+Nest JS Framework
+```
