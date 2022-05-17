@@ -11,11 +11,12 @@ export class UserRepository extends Repository<User> {
 
         const user = this.create({ uid, nickName })
 
-        try{
+        try{ // 닉네임 중복되지 않는다면
             await this.save(user);
             Logger.verbose('user', JSON.stringify(user));
             return 'true';
-        }catch(error){
+        }
+        catch(error){ // 중복된 닉네임이라면
             if(error.code === '23505'){
                 return 'false';
             }
