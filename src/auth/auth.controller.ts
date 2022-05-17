@@ -12,9 +12,9 @@ export class AuthController {
         return this.authService.getNickNameByUid(uid);
     }
     
-    @Post('/signup') // localhost:3000/auth/:uid 닉네임 생성
+    @Post('/create') // localhost:3000/auth/create 닉네임 생성
     @UsePipes(ValidationPipe) // 문자열 검사
-    signUp(@Body() userCredentialDto : UserCredentialDto): Promise<string> {
-        return this.authService.signUp(userCredentialDto);
+    createNickName(@Body() userCredentialDto : UserCredentialDto): Promise<string> {
+        return this.authService.createNickName(userCredentialDto);
     }
 }
