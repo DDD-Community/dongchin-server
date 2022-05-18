@@ -1,6 +1,7 @@
 # Dongchin - Server
 
-### 📌FrameWork
+### 📌 Description
 
 - NestJS
 - TypeScript
+- PostgresQL
