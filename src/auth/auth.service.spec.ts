@@ -1,51 +1,56 @@
-import { NotFoundException } from "@nestjs/common";
-import { Test, TestingModule } from "@nestjs/testing";
-import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
-import { typeORMConfig } from "src/configs/typeorm.config";
+/*
+auth Module의 Service를 테스트하기 위한 Unit Test 설정
+*/
+import { Test } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { AuthService } from "./auth.service"
 import { User } from "./user.entity";
 import { UserRepository } from "./user.repository";
 
-class MockRepository {
-    async findOne(uid: string) {
-        const user: User = new User();
-        user.uid = uid;
-        return user;
-    }
-}
+const mockRepository = () => ({
+    findOne: jest.fn(),
+    save: jest.fn(),
+    create: jest.fn(),
+});
 
-describe('AuthService', ()=> {
+type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
+
+describe('AuthService', ()=> { // 실제 Database를 접근하여 unit Test를 실행하지 않기 위해 Mocking -> Repository Mocking
     let authService: AuthService;
+    let userRepository: MockRepository<UserRepository>;
 
     beforeEach(async () => {
-        const module : TestingModule = await Test.createTestingModule({
-            imports: [
-                TypeOrmModule.forFeature([UserRepository]),
-                TypeOrmModule.forRoot({
-                    type: 'postgres',
-                    host: 'localhost',
-                    port: 5432,
-                    username: 'postgres',
-                    password: 'postgres',
-                    database: 'Linco-app',
-                    entities: [__dirname + '/../**/*.entity.{js,ts}'],
-                    synchronize: true
-                }),
-            ],
+        const modules = await Test.createTestingModule({
             providers: [
-                AuthService,
-                {
-                    provide: getRepositoryToken(User),
-                    useClass: MockRepository,
-                },
+            AuthService,
+            {provide: getRepositoryToken(UserRepository), useValue: mockRepository() }
             ],
         }).compile();
-        authService = module.get<AuthService>(AuthService);
+
+        authService = modules.get<AuthService>(AuthService);
+        userRepository = modules.get(getRepositoryToken(UserRepository));
     });
 
-    it('get User', async () => {
-        const uid: string = "taeyong";
-        const result = await authService.getNickNameByUid(uid);
-        expect(result.uid).toBe(uid);
+    describe('findByUID', () => {
+        it('should fail if user doesn not exist', async () => {
+            userRepository.findOne.mockResolvedValue(null);
+
+            const result = await authService.getNickNameByUid("xcvdfer");
+            expect(result.nickName).toBe("Not Found");
+        });
+
+        it('user exists', async() => {
+            const user : User = new User();
+            user.uid = "xcvdfer";
+            user.nickName = "yongsHub";
+            userRepository.findOne.mockResolvedValue(user); // mocking한 결과 유도
+            const result = await authService.getNickNameByUid("xcvdfer");
+
+            expect(result).toEqual(user);
+        })
+    })
+    it('be defined', () => {
+        expect(authService).toBeDefined();
     })
 });

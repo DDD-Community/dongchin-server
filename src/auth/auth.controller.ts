@@ -14,7 +14,7 @@ export class AuthController {
     
     @Post('/create') // localhost:3000/auth/create 닉네임 생성
     @UsePipes(ValidationPipe) // 문자열 검사
-    createNickName(@Body() userCredentialDto : UserCredentialDto): Promise<string> {
+    createNickName(@Body() userCredentialDto : UserCredentialDto): Promise<{ok: boolean; error?: string }> {
         return this.authService.createNickName(userCredentialDto);
     }
 }
