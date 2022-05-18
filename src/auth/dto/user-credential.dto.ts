@@ -1,9 +1,9 @@
 import { IsString } from "class-validator";
 
 export class UserCredentialDto {
-    @IsString()
+    @IsString() // 문자열인지 검사
     uid: string;
 
-    @IsString()
+    @IsString() // 문자열인지 검사
     nickName: string;
 }
