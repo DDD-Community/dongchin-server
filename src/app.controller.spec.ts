@@ -15,7 +15,7 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
+    it('Hello This is CI/CD RDS TEST!!', () => {
       expect(appController.getHello()).toBe('Hello This is CI/CD RDS TEST!!');
     });
   });
