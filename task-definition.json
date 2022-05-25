@@ -31,13 +31,18 @@
       "dnsServers": null,
       "mountPoints": [],
       "workingDirectory": null,
-      "secrets": null,
+      "secrets": [
+        {
+          "name": "TEST_ENV",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:789601804520:secret:myApp/TEST_ENV-ULijca"
+        }
+      ],
       "dockerSecurityOptions": null,
       "memory": null,
       "memoryReservation": null,
       "volumesFrom": [],
       "stopTimeout": null,
-      "image": "789601804520.dkr.ecr.ap-northeast-2.amazonaws.com/dongchin-repository:latest",
+      "image": "789601804520.dkr.ecr.ap-northeast-2.amazonaws.com/dongchin-repository:f9587387d86a13e8de515a43b1d2e7ba93aefd55",
       "startTimeout": null,
       "firelensConfiguration": null,
       "dependsOn": null,
@@ -58,13 +63,13 @@
     }
   ],
   "placementConstraints": [],
-  "memory": "512",
-  "taskRoleArn": null,
+  "memory": "1024",
+  "taskRoleArn": "arn:aws:iam::789601804520:role/ecsTaskExecutionRole",
   "compatibilities": [
     "EC2",
     "FARGATE"
   ],
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:789601804520:task-definition/my-app-task:10",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:789601804520:task-definition/my-app-task:20",
   "family": "my-app-task",
   "requiresAttributes": [
     {
@@ -95,6 +100,12 @@
       "targetId": null,
       "targetType": null,
       "value": null,
+      "name": "com.amazonaws.ecs.capability.task-iam-role"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
       "name": "ecs.capability.execution-role-ecr-pull"
     },
     {
@@ -116,8 +127,8 @@
   ],
   "networkMode": "awsvpc",
   "runtimePlatform": null,
-  "cpu": "256",
-  "revision": 10,
+  "cpu": "512",
+  "revision": 20,
   "status": "ACTIVE",
   "inferenceAccelerators": null,
   "proxyConfiguration": null,
