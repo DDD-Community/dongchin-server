@@ -1,6 +1,6 @@
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 
-//typeORM 일단 Local에서 생성
+//클라우드환경으로 배포
 export const typeORMConfig : TypeOrmModuleOptions = {
     type: 'postgres',
     host: process.env.DB_HOST,
