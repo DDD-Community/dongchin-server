@@ -32,20 +32,20 @@ describe('AuthService', ()=> { // 실제 Database를 접근하여 unit Test를 �
         userRepository = modules.get(getRepositoryToken(UserRepository));
     });
 
-    describe('findByUID', () => {
+    describe('findById', () => {
         it('should fail if user doesn not exist', async () => {
             userRepository.findOne.mockResolvedValue(null);
 
-            const result = await authService.getNickNameByUid("xcvdfer");
+            const result = await authService.getNickNameById(100000);
             expect(result.nickName).toBe("Not Found");
         });
 
         it('user exists', async() => {
             const user : User = new User();
-            user.uid = "xcvdfer";
+            user.id = 1;
             user.nickName = "yongsHub";
             userRepository.findOne.mockResolvedValue(user); // mocking한 결과 유도
-            const result = await authService.getNickNameByUid("xcvdfer");
+            const result = await authService.getNickNameById(1);
 
             expect(result).toEqual(user);
         })
