@@ -58,7 +58,7 @@
       "memoryReservation": null,
       "volumesFrom": [],
       "stopTimeout": null,
-      "image": "789601804520.dkr.ecr.ap-northeast-2.amazonaws.com/dongchin-repository:82d49d7fb933adc987acae8f4d6689d06f0dd2f4",
+      "image": "789601804520.dkr.ecr.ap-northeast-2.amazonaws.com/dongchin-repository:2e724dc74b52df4dfa69a68044a2a2dff31c7dab",
       "startTimeout": null,
       "firelensConfiguration": null,
       "dependsOn": null,
@@ -85,7 +85,7 @@
     "EC2",
     "FARGATE"
   ],
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:789601804520:task-definition/my-app-task:28",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:789601804520:task-definition/my-app-task:29",
   "family": "my-app-task",
   "requiresAttributes": [
     {
@@ -150,7 +150,7 @@
   "networkMode": "awsvpc",
   "runtimePlatform": null,
   "cpu": "512",
-  "revision": 28,
+  "revision": 29,
   "status": "ACTIVE",
   "inferenceAccelerators": null,
   "proxyConfiguration": null,
