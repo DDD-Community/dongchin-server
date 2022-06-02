@@ -5,4 +5,4 @@
 - NestJS
 - TypeScript
 - PostgresQL
-- AWS
+- AWS, ECS
