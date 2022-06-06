@@ -3,16 +3,18 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
 import { typeORMConfig } from './configs/typeorm.config';
+import { NicknameModule } from './nickname/nickname.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeORMConfig),
-    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-    })],
+    }),
+    NicknameModule,
+    AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
