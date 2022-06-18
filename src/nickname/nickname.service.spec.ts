@@ -59,8 +59,10 @@ describe('NicknameService', ()=>{
             nickNameRepository.findOne.mockResolvedValue(user);
             
             const returnObject = Object.assign({
+                data: true,
                 statusCode: 200,
                 ok: true,
+                message: "닉네임이 변경되었습니다."
             })
             const result = await nicknameService.updateNickName(1, {nickName: "taeyong"});
 
