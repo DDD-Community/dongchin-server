@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NicknameController } from './nickname.controller';
-import { NicknameRepository } from './nickname.repository';
+import { NicknameRepository } from '../repository/nickname.repository';
 import { NicknameService } from './nickname.service';
 
 @Module({

@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Toon } from 'src/toon/toon.entity';
-import { ToonRepository } from 'src/toon/toon.repository';
-import { Banner } from './banner.entity';
-import { BannerRepository } from './banner.repository';
+import { Toon } from 'src/entity/toon.entity';
+import { ToonRepository } from 'src/repository/toon.repository';
+import { ToonToBannerRepository } from 'src/repository/toonToBanner.repository';
+import { Banner } from '../entity/banner.entity';
+import { BannerRepository } from '../repository/banner.repository';
 import { BannerDto } from './dto/banner.dto';
 
 @Injectable()
@@ -14,6 +15,9 @@ export class BannerService {
 
         @InjectRepository(ToonRepository)
         private toonRepository: ToonRepository,
+
+        @InjectRepository(ToonToBannerRepository)
+        private toonToBannerRepository: ToonToBannerRepository
     ){}
 
     async createBanner(bannerDto : BannerDto){ // 배너 생성
@@ -21,10 +25,23 @@ export class BannerService {
     }
 
     async getAllBanners(){ // 배너 목록 조회
-        const query = this.bannerRepository.createQueryBuilder('banner');
-        const banners = await query.getMany();
-        console.log(banners);
-        return banners;
+        try{
+            const query = this.bannerRepository.createQueryBuilder('banner');
+            const banners = await query.getMany();
+            if(!banners) throw new NotFoundException(Object.assign({
+                statusCode: 404,
+                ok: false,
+                message: "배너 목록이 없습니다."
+            }))
+            return Object.assign({
+                data: banners,
+                statusCode: 200,
+                ok: true,
+                message: "배너 목록 조회 성공"
+            });
+        }catch(NotFoundException){
+            throw NotFoundException;
+        }
     }
 
     async getAllToonsByRandom() { // 랜덤 배너 가져오기
@@ -33,27 +50,47 @@ export class BannerService {
         toons.sort(() => Math.random() - 0.5);
         
         const randomToons = toons.splice(0, 5);
-        return randomToons;
+        return Object.assign({
+            data: randomToons,
+            statusCode: 200,
+            ok: true,
+            message: "랜덤으로 툰 가져오기 성공"
+        });
     }
 
-    async updateBannerToons(bannerId : number, toonId : number) { // bannerId에 toonId 1:N관계 만들기
-        const banner : Banner = await this.bannerRepository.findOne(bannerId, {relations: ["toons"]});
-        const toon : Toon = await this.toonRepository.findOne(toonId);
-        try{
-            banner.toons.push(toon);
-            await this.bannerRepository.save(banner);
-        }catch(error){
-            console.log(error);
-        }
-    }
 
     async getAllToonsByBanner(id: number) {
-        const query =  this.toonRepository // 인스타툰 테이블에서 bannerId에 따른 목록 가져오기
-                            .createQueryBuilder()
-                            .select("toon")
-                            .from(Toon, "toon")
-                            .where("toon.bannerId = :bannerId", { bannerId: id});
-        const toons = await query.getMany();
-        return toons;
+        try{
+            const toonsId = await this.bannerRepository
+            .createQueryBuilder('banner')
+            .leftJoinAndSelect('banner.toonToBanners', 'toonToBanners')
+            .where('banner.id = :id', {id: id})
+            .getRawMany()
+            if(!toonsId){
+                throw new NotFoundException({
+                    statusCode: 404,
+                    ok: false,
+                    message: "banner Id를 찾을 수 없습니다."
+                })
+            }
+            const result = []
+            toonsId.forEach((toon) => {
+                result.push(toon.toonToBanners_toonId)
+                return toon.toonToBanners_toonId;
+            })
+
+            const toons = await this.toonRepository
+            .createQueryBuilder('toon')
+            .whereInIds(result)
+            .getMany()
+            Logger.verbose('toons', toons);
+            return Object.assign({
+                data: toons,
+                statusCode: 200,
+                message: "banner의 인스타툰 가져오기 성공"
+            });
+        }catch(NotFoundException){
+            throw NotFoundException;
+        }
     }
 }
