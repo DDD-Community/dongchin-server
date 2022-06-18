@@ -1,8 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Nickname } from "./nickname.entity";
-import { NicknameRepository } from "./nickname.repository";
+import { Nickname } from "../entity/nickname.entity";
+import { NicknameRepository } from "../repository/nickname.repository";
 import { NicknameService } from "./nickname.service";
 
 const mockRepository = () => ({
