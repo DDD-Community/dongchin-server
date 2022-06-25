@@ -1,8 +1,8 @@
 import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Nickname } from "./nickname.entity";
-import { NicknameRepository } from "./nickname.repository";
+import { Nickname } from "../entity/nickname.entity";
+import { NicknameRepository } from "../repository/nickname.repository";
 import { NicknameService } from "./nickname.service";
 
 const mockRepository = () => ({
@@ -59,8 +59,10 @@ describe('NicknameService', ()=>{
             nickNameRepository.findOne.mockResolvedValue(user);
             
             const returnObject = Object.assign({
+                data: true,
                 statusCode: 200,
                 ok: true,
+                message: "닉네임이 변경되었습니다."
             })
             const result = await nicknameService.updateNickName(1, {nickName: "taeyong"});
 
