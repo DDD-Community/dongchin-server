@@ -3,6 +3,7 @@ import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiNotFoundResponse
 import { responseFailDto, responseListDto, responseToonDto } from 'src/api/globalDTO';
 import { RelationDto } from './dto/relation.dto';
 import { ToonDto } from './dto/toon-create.dto';
+import { ToonHashTagDto } from './dto/toon-hashtag.dto';
 import { ToonService } from './toon.service';
 
 @ApiTags('toon')
@@ -40,6 +41,20 @@ export class ToonController {
     ): Promise<any>{
         return this.toonService.registerToBanner(relationDto);
     }
+
+    //POST 인스타툰에 태그 달기
+    @ApiOperation({ summary: "인스타툰에 태그 등록하기"})
+    @ApiCreatedResponse({status: 201, description: "성공"})
+    @ApiNotFoundResponse({status:404, type: responseFailDto})
+    @UsePipes(ValidationPipe)
+    @Post('/hashtag')
+    registerHashtag(
+        @Body() toonHashDto: ToonHashTagDto
+    ): Promise<any>{
+        return this.toonService.registerHashtag(toonHashDto);
+    }
+
+
 
     //GET 최근 등록 순으로 인스타툰 가져오기
     @ApiOperation({summary: "새롭게 등록된 툰 API"})

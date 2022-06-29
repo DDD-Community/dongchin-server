@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Toon } from "src/entity/toon.entity";
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ToonToBanner } from "./toonToBanner.entity";
 
 @Entity()

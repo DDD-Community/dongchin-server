@@ -8,6 +8,7 @@ import { NicknameModule } from './nickname/nickname.module';
 import { AuthModule } from './auth/auth.module';
 import { ToonModule } from './toon/toon.module';
 import { BannerModule } from './banner/banner.module';
+import { HashtagModule } from './hashtag/hashtag.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { BannerModule } from './banner/banner.module';
     NicknameModule,
     AuthModule,
     ToonModule,
-    BannerModule],
+    BannerModule,
+    HashtagModule],
   controllers: [AppController],
   providers: [AppService],
 })

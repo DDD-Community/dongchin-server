@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Banner } from "src/entity/banner.entity";
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { HashTag } from "./hashtag.entity";
 import { ToonToBanner } from "./toonToBanner.entity";
 
 @Entity()
@@ -23,4 +23,8 @@ export class Toon extends BaseEntity {
 
     @OneToMany(() => ToonToBanner, toonToBanner => toonToBanner.toon)
     public toonToBanners!: ToonToBanner[]
+
+    @ManyToMany(() => HashTag)
+    @JoinTable()
+    hashTags: HashTag[];
 }
