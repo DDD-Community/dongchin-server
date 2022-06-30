@@ -39,6 +39,7 @@ export class HashtagController {
 
     /* 검색 API -> 검색 키워드에 따른 인스타툰 list 제공 + 검색 count + 1*/
     @ApiOperation({summary: "태그 검색 API: 키워드에 따른 인툰 list"})
+    @ApiNotFoundResponse({description:"검색 키워드에 따른 인툰리스트 가져오기 실패", type: responseFailDto})
     @Get()
     getSearchKeyWord(@Query('tagName') tagName: String): Promise<any> {
         return this.hashTagService.getSearchKeyWord(tagName);
@@ -46,6 +47,8 @@ export class HashtagController {
 
     /* 주제 키워드 list를 제공하는 API */
     @ApiOperation({summary: '주제 키워드 태그 목록 API'})
+    @ApiNotFoundResponse({description:"주제 키워드 가져오기 실패", type: responseFailDto})
+    @ApiOkResponse({description:"태그 목록 가져오기 성공", type: responseTagListDto})
     @Get('/topic')
     getTopicKeyWord(): Promise<any> {
         return this.hashTagService.getTopicKeyWord();
@@ -54,6 +57,8 @@ export class HashtagController {
 
     /* 그림체 키워드 list를 제공하는 API */
     @ApiOperation({summary: '그림체 키워드 태그 목록 API'})
+    @ApiNotFoundResponse({description:"그림체 키워드 가져오기 실패", type: responseFailDto})
+    @ApiOkResponse({description:"태그 목록 가져오기 성공", type: responseTagListDto})
     @Get('/draw-style')
     getDrawStyleKeyWord(): Promise<any> {
         return this.hashTagService.getDrawStyleKeyWord();
