@@ -21,7 +21,7 @@ export class BannerController {
     @ApiOperation({summary: "배너 전체 목록"})
     @ApiNotFoundResponse({description:"배너 가져오기 실패", type: responseFailDto})
     @ApiOkResponse({description:"배너 목록 가져오기 성공", type: responseBannerListDto})
-    @Get('/list')
+    @Get()
     getAllBanners(){
         return this.bannerService.getAllBanners();
     }
