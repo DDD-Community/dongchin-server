@@ -6,8 +6,8 @@ import { ToonDto } from './dto/toon-create.dto';
 import { ToonHashTagDto } from './dto/toon-hashtag.dto';
 import { ToonService } from './toon.service';
 
-@ApiTags('toon')
-@Controller('toon')
+@ApiTags('toons')
+@Controller('toons')
 export class ToonController {
     constructor(private toonService: ToonService){}
 

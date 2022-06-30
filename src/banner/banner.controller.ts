@@ -4,8 +4,8 @@ import { responseBannerDto, responseBannerListDto, responseFailDto, responseList
 import { BannerService } from './banner.service';
 import { BannerDto } from './dto/banner.dto';
 
-@ApiTags('banner')
-@Controller('banner')
+@ApiTags('banners')
+@Controller('banners')
 export class BannerController {
     constructor(private bannerService: BannerService){}
 

@@ -4,8 +4,8 @@ import { responseFailDto, responseTagDto, responseTagListDto } from 'src/api/glo
 import { HashTagDto } from './dto/hashtag-create.dto';
 import { HashtagService } from './hashtag.service';
 
-@ApiTags('hashtag')
-@Controller('hashtag')
+@ApiTags('hashtags')
+@Controller('hashtags')
 export class HashtagController {
     constructor(private hashTagService: HashtagService){}
 

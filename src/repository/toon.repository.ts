@@ -1,4 +1,4 @@
-import { BadRequestException, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Logger, UnauthorizedException } from "@nestjs/common";
 import { EntityRepository, Repository } from "typeorm";
 import { ToonDto } from "../toon/dto/toon-create.dto";
 import { Toon } from "../entity/toon.entity";
@@ -19,7 +19,7 @@ export class ToonRepository extends Repository<Toon> {
                 message: "인스타툰이 등록되었습니다."
             });
         }catch(error){ // url 중복될 때 error
-            console.log('error code', error.code);
+            Logger.verbose('error code', error.code);
             throw new BadRequestException(Object.assign({
                 statusCode:400,
                 ok: false,
