@@ -6,6 +6,10 @@ import { ToonDto } from './dto/toon-create.dto';
 import { ToonRepository } from '../repository/toon.repository';
 import { ToonToBannerRepository } from 'src/repository/toonToBanner.repository';
 import { ToonToBanner } from 'src/entity/toonToBanner.entity';
+import { ToonHashTagDto } from './dto/toon-hashtag.dto';
+import { HashTagRepository } from 'src/repository/hashtag.repository';
+import { HashTag } from 'src/entity/hashtag.entity';
+import { Toon } from 'src/entity/toon.entity';
 
 
 @Injectable()
@@ -18,7 +22,10 @@ export class ToonService {
         private bannerRepository: BannerRepository,
 
         @InjectRepository(ToonToBannerRepository)
-        private toonToBanenrRepository: ToonToBannerRepository
+        private toonToBanenrRepository: ToonToBannerRepository,
+
+        @InjectRepository(HashTagRepository)
+        private hashTagRepository: HashTagRepository
     ){}
 
     // 인스타툰 링크주소 생성
@@ -62,6 +69,41 @@ export class ToonService {
                 statusCode:201,
                 ok:true,
                 message:"인스타툰이 배너에 등록되었습니다."
+            })
+        }catch(NotFoundException){
+            throw NotFoundException;
+        }
+    }
+
+    //인스타툰에 태그 달기
+    async registerHashtag(toonHashDto: ToonHashTagDto): Promise<any>{
+        try{
+            const hashTagId : number[] = toonHashDto.hashTagIds;
+            const toonId : number = toonHashDto.toonId;
+            const toon: Toon = await this.toonRepository.findOne(toonId);
+            const result: HashTag[] = await this.hashTagRepository
+            .createQueryBuilder('hashtag')
+            .where("hashtag.id IN (:...hashTagId)", { hashTagId })
+            .getMany();
+            
+            if(!toon || !result){
+                throw new NotFoundException(Object.assign({
+                    statusCode: 404,
+                    ok:false,
+                    message: "id가 존재하지 않습니다.",
+                }))
+            }
+
+            toon.hashTags = result;
+            await this.toonRepository.save(toon);
+            Logger.verbose('result', JSON.stringify(result));
+            Logger.verbose('hashTagId', hashTagId);
+            Logger.verbose('toonId', toonId);
+            return Object.assign({
+                data: result,
+                statusCode:201,
+                ok:true,
+                message:"인스타툰에 태그가 등록되었습니다."
             })
         }catch(NotFoundException){
             throw NotFoundException;

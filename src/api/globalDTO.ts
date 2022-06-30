@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Banner } from "src/entity/banner.entity";
+import { HashTag } from "src/entity/hashtag.entity";
 import { Nickname } from "src/entity/nickname.entity";
 import { Toon } from "src/entity/toon.entity";
 
@@ -76,6 +77,34 @@ export class responseBannerListDto {
     data: Banner[]
 
     @ApiProperty({description:"상태 코드", default:200})
+    statusCode: number
+
+    @ApiProperty({description:"성공", default:true})
+    ok: boolean
+
+    @ApiProperty({description:"성공 메시지"})
+    message: string
+}
+
+export class responseTagListDto {
+    @ApiProperty({description: "해쉬태그 리스트"})
+    data: HashTag[]
+
+    @ApiProperty({description:"상태 코드", default:200})
+    statusCode: number
+
+    @ApiProperty({description:"성공", default:true})
+    ok: boolean
+
+    @ApiProperty({description:"성공 메시지"})
+    message: string
+}
+
+export class responseTagDto {
+    @ApiProperty({description: "인스타툰 객체"})
+    data: HashTag
+
+    @ApiProperty({description:"상태 코드"})
     statusCode: number
 
     @ApiProperty({description:"성공", default:true})

@@ -4,8 +4,8 @@ import { responseBannerDto, responseBannerListDto, responseFailDto, responseList
 import { BannerService } from './banner.service';
 import { BannerDto } from './dto/banner.dto';
 
-@ApiTags('banner')
-@Controller('banner')
+@ApiTags('banners')
+@Controller('banners')
 export class BannerController {
     constructor(private bannerService: BannerService){}
 
@@ -21,12 +21,12 @@ export class BannerController {
     @ApiOperation({summary: "배너 전체 목록"})
     @ApiNotFoundResponse({description:"배너 가져오기 실패", type: responseFailDto})
     @ApiOkResponse({description:"배너 목록 가져오기 성공", type: responseBannerListDto})
-    @Get('/list')
+    @Get()
     getAllBanners(){
         return this.bannerService.getAllBanners();
     }
 
-    @ApiOperation({summary: "Random Banner를 위한 인스타툰 목록 가져오기"})
+    @ApiOperation({summary: "랜덤 배너 API"})
     @ApiOkResponse({description:"랜덤 배너의 인스타툰 리스트", type: responseListDto})
     @Get('/random')
     getAllToonsByRandom(){
