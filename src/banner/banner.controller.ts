@@ -26,7 +26,7 @@ export class BannerController {
         return this.bannerService.getAllBanners();
     }
 
-    @ApiOperation({summary: "Random Banner를 위한 인스타툰 목록 가져오기"})
+    @ApiOperation({summary: "랜덤 배너 API"})
     @ApiOkResponse({description:"랜덤 배너의 인스타툰 리스트", type: responseListDto})
     @Get('/random')
     getAllToonsByRandom(){
