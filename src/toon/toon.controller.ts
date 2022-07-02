@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseBoolPipe, ParseIntPipe, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseBoolPipe, ParseIntPipe, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { responseFailDto, responseListDto, responseToonDto } from 'src/api/globalDTO';
 import { RelationDto } from './dto/relation.dto';
@@ -73,7 +73,7 @@ export class ToonController {
 
     //GET 인스타툰 작품마다 좋아요 누르기
     @ApiOperation({summary: "인스타툰 작품에 좋아요/하트 API count수 증가: key=true 감소: key=false"})
-    @Get('/:id')
+    @Patch('/:id')
     makeHeartCount(
         @Param('id', ParseIntPipe) id: number,
         @Query('key', ParseBoolPipe) boolType: boolean
