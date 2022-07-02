@@ -4,6 +4,7 @@ import { Config } from './constant/nickName.config';
 import { NickNameCredentialDto } from './dto/nickname-credential.dto';
 import { Nickname } from '../entity/nickname.entity';
 import { NicknameRepository } from '../repository/nickname.repository';
+import { responseFailDto } from 'src/api/globalDTO';
 
 @Injectable()
 export class NicknameService {
@@ -31,6 +32,31 @@ export class NicknameService {
         Logger.verbose('user', JSON.stringify(user));
         return user;
     };
+
+    // 닉네임 이름으로 중복체크 Function
+    async checkValidation(nickName: String): Promise <any> {
+        try{
+            const user = await this.nickNameRepository
+            .createQueryBuilder('nickname')
+            .where('nickname.nickName = :nickName', {nickName})
+            .getOne()
+            if(user === undefined){
+                return Object.assign({
+                    statusCode: 200,
+                    ok:true,
+                    message: "닉네임 사용이 가능합니다.",
+                });
+            }else{
+                return Object.assign({
+                    statusCode: 200,
+                    ok:false,
+                    message: "닉네임 사용이 불가능합니다.",
+                });
+            }
+        }catch(error){
+            Logger.verbose('error', error);
+        }
+    }
 
     //닉네임 수정 Function
     async updateNickName(id : number, nicknameCredentialDto : NickNameCredentialDto) : Promise <any> {

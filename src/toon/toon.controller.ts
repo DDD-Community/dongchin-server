@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, ParseBoolPipe, ParseIntPipe, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ApiBody, ApiCreatedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { responseFailDto, responseListDto, responseToonDto } from 'src/api/globalDTO';
 import { RelationDto } from './dto/relation.dto';
 import { ToonDto } from './dto/toon-create.dto';
@@ -63,5 +63,21 @@ export class ToonController {
     @Get('/recent')
     getRecentToons(): Promise<any>{
         return this.toonService.getRecentToons();
+    }
+
+    @ApiOperation({summary: "실시간 인기툰 API"})
+    @Get('/popular-list')
+    getPopularList(): Promise<any>{
+        return this.toonService.getPopularList();
+    }
+
+    //GET 인스타툰 작품마다 좋아요 누르기
+    @ApiOperation({summary: "인스타툰 작품에 좋아요/하트 API count수 증가: key=true 감소: key=false"})
+    @Patch('/:id')
+    makeHeartCount(
+        @Param('id', ParseIntPipe) id: number,
+        @Query('key', ParseBoolPipe) boolType: boolean
+        ): Promise<any> {
+        return this.toonService.makeHeartCount(id, boolType);
     }
 }

@@ -1,9 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Toon } from 'src/entity/toon.entity';
 import { ToonRepository } from 'src/repository/toon.repository';
-import { ToonToBannerRepository } from 'src/repository/toonToBanner.repository';
-import { Banner } from '../entity/banner.entity';
 import { BannerRepository } from '../repository/banner.repository';
 import { BannerDto } from './dto/banner.dto';
 
@@ -14,10 +11,7 @@ export class BannerService {
         private bannerRepository: BannerRepository,
 
         @InjectRepository(ToonRepository)
-        private toonRepository: ToonRepository,
-
-        @InjectRepository(ToonToBannerRepository)
-        private toonToBannerRepository: ToonToBannerRepository
+        private toonRepository: ToonRepository
     ){}
 
     async createBanner(bannerDto : BannerDto){ // 배너 생성

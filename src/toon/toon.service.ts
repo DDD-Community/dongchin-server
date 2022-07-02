@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BannerRepository } from 'src/repository/banner.repository';
 import { RelationDto } from './dto/relation.dto';
@@ -115,7 +115,7 @@ export class ToonService {
         try{
             const toons = await this.toonRepository.createQueryBuilder('toon')
             .orderBy('toon.createAt', 'DESC')
-            .limit(3)
+            .take(3)
             .getMany()
 
             if(!toons){
@@ -135,5 +135,51 @@ export class ToonService {
         }catch(NotFoundException){
             throw NotFoundException;
         }
+    }
+
+    //인스타툰 작품 하트 수 증가 또는 감소 API
+    async makeHeartCount(id: number, boolType: boolean): Promise<any> {
+        Logger.verbose(id, boolType);
+        try{
+            const toon = await this.toonRepository.findOne(id);
+            if(!toon){
+                throw new NotFoundException(Object.assign({
+                    statusCode: 404,
+                    ok: false,
+                    message: "등록된 툰이 없습니다."
+                }))
+            }else{
+                if(boolType){ // boolType is true 하트 수 증가
+                    toon.heartCount += 1
+                }else{
+                    if(toon.heartCount >= 1){
+                        toon.heartCount -= 1
+                    }
+                }
+                const result = await this.toonRepository.save(toon);
+                console.log(result);
+            }
+            return Object.assign({
+                statusCode: 200,
+                ok: true,
+                message: "성공적으로 작업하였습니다."
+            })
+        }catch(NotFoundException){
+            throw NotFoundException;
+        }
+    }
+
+
+    //실시간 인기툰 API
+    async getPopularList(): Promise<any> {
+        const toons: Toon[] = await this.toonRepository
+        .createQueryBuilder('toon')
+        .orderBy('toon.heartCount', 'DESC')
+        .take(6)
+        .execute()
+        
+        console.log(toons)
+        return toons;
+        
     }
 }
