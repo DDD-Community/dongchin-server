@@ -37,7 +37,7 @@ export class NicknameController {
     @ApiOkResponse({description: "닉네임 중복 체크"})
     @Get()
     @UsePipes(ValidationPipe)
-    checkValidation(@Query('nickname') nickName: String): Promise<any> {
+    checkValidation(@Query('nickName') nickName: String): Promise<any> {
         return this.nicknameService.checkValidation(nickName);
     }
 
