@@ -18,6 +18,10 @@ export class Toon extends BaseEntity {
     @ApiProperty({description:"인스타툰 id"})
     public name: string
 
+    @Column({default: 0})
+    @ApiProperty({description:"하트/좋아요 수"})
+    public heartCount: number
+
     @CreateDateColumn({type: 'timestamp', default: 'NOW()'})
     public createAt: Date
 

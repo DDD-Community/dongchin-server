@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { responseFailDto, responseTagDto, responseTagListDto } from 'src/api/globalDTO';
 import { HashTagDto } from './dto/hashtag-create.dto';
