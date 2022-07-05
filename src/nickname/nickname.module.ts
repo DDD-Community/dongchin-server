@@ -5,10 +5,8 @@ import { NicknameRepository } from '../repository/nickname.repository';
 import { NicknameService } from './nickname.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([NicknameRepository]),
-  ],
+  imports: [TypeOrmModule.forFeature([NicknameRepository])],
   controllers: [NicknameController],
-  providers: [NicknameService]
+  providers: [NicknameService],
 })
 export class NicknameModule {}

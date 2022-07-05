@@ -9,9 +9,14 @@ import { HashTagRepository } from 'src/repository/hashtag.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ToonRepository, BannerRepository, ToonToBannerRepository, HashTagRepository]),
+    TypeOrmModule.forFeature([
+      ToonRepository,
+      BannerRepository,
+      ToonToBannerRepository,
+      HashTagRepository,
+    ]),
   ],
   controllers: [ToonController],
-  providers: [ToonService]
+  providers: [ToonService],
 })
 export class ToonModule {}

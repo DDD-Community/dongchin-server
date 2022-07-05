@@ -6,10 +6,8 @@ import { HashtagController } from './hashtag.controller';
 import { HashtagService } from './hashtag.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([HashTagRepository, ToonRepository])
-  ],
+  imports: [TypeOrmModule.forFeature([HashTagRepository, ToonRepository])],
   controllers: [HashtagController],
-  providers: [HashtagService]
+  providers: [HashtagService],
 })
 export class HashtagModule {}

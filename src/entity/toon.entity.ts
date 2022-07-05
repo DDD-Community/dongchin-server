@@ -1,34 +1,44 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
-import { HashTag } from "./hashtag.entity";
-import { ToonToBanner } from "./toonToBanner.entity";
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
+import { HashTag } from './hashtag.entity';
+import { ToonToBanner } from './toonToBanner.entity';
 
 @Entity()
 @Unique(['url']) // url 중복 여부 체크
 export class Toon extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    @ApiProperty({description: "primary key", default:1})
-    public id: number
-    
-    @Column()
-    @ApiProperty({description: "인스타툰 url"})
-    public url: string
+  @PrimaryGeneratedColumn()
+  @ApiProperty({ description: 'primary key', default: 1 })
+  public id: number;
 
-    @Column()
-    @ApiProperty({description:"인스타툰 id"})
-    public name: string
+  @Column()
+  @ApiProperty({ description: '인스타툰 url' })
+  public url: string;
 
-    @Column({default: 0})
-    @ApiProperty({description:"하트/좋아요 수"})
-    public heartCount: number
+  @Column()
+  @ApiProperty({ description: '인스타툰 id' })
+  public name: string;
 
-    @CreateDateColumn({type: 'timestamp', default: 'NOW()'})
-    public createAt: Date
+  @Column({ default: 0 })
+  @ApiProperty({ description: '하트/좋아요 수' })
+  public heartCount: number;
 
-    @OneToMany(() => ToonToBanner, toonToBanner => toonToBanner.toon)
-    public toonToBanners!: ToonToBanner[]
+  @CreateDateColumn({ type: 'timestamp', default: 'NOW()' })
+  public createAt: Date;
 
-    @ManyToMany(() => HashTag)
-    @JoinTable()
-    hashTags: HashTag[];
+  @OneToMany(() => ToonToBanner, (toonToBanner) => toonToBanner.toon)
+  public toonToBanners!: ToonToBanner[];
+
+  @ManyToMany(() => HashTag)
+  @JoinTable()
+  hashTags: HashTag[];
 }
