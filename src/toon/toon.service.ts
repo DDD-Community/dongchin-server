@@ -165,8 +165,7 @@ export class ToonService {
             toon.likeCount -= 1;
           }
         }
-        const result = await this.toonRepository.save(toon);
-        console.log(result);
+        await this.toonRepository.save(toon);
       }
       return Object.assign({
         statusCode: 200,
@@ -182,11 +181,10 @@ export class ToonService {
   async getPopularList(): Promise<any> {
     const toons: Toon[] = await this.toonRepository
       .createQueryBuilder('toon')
-      .orderBy('toon.heartCount', 'DESC')
+      .orderBy('toon.likeCount', 'DESC')
       .take(6)
       .execute();
 
-    console.log(toons);
     return toons;
   }
 }

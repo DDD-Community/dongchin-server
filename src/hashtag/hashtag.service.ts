@@ -79,11 +79,13 @@ export class HashtagService {
 
       const toons = await this.toonRepository
         .createQueryBuilder('toon')
-        .select('toon', 'toon.hashTags')
-        .leftJoinAndSelect('toon.hashTags', 'hashtag', '')
+        .select('toon', 'toon.tag')
+        .innerJoinAndSelect('toon.tag', 'tag')
         .getMany();
 
       const result = [];
+      if (!toons) return result;
+
       toons.forEach((toon) => {
         // keyword를 가지고 있는 인스타툰 filtering
         toon.tag.forEach((tag) => {

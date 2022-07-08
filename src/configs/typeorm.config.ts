@@ -1,4 +1,9 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { Banner } from 'src/entity/banner.entity';
+import { HashTag } from 'src/entity/hashtag.entity';
+import { Nickname } from 'src/entity/nickname.entity';
+import { Toon } from 'src/entity/toon.entity';
+import { ToonToBanner } from 'src/entity/toonToBanner.entity';
 
 //클라우드환경으로 배포
 export const typeORMConfig: TypeOrmModuleOptions = {
@@ -8,6 +13,6 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [__dirname + '/../**/*.entity.{js,ts}'],
+  entities: [Banner, HashTag, Nickname, Toon, ToonToBanner],
   synchronize: true,
 };

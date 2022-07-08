@@ -5,7 +5,7 @@ import { Nickname } from 'src/entity/nickname.entity';
 import { Toon } from 'src/entity/toon.entity';
 
 export class responseFailDto {
-  @ApiProperty({ description: '상태 코드' })
+  @ApiProperty({ description: '상태 코드', default: 'Error Number' })
   statusCode: number;
 
   @ApiProperty({ description: '실패', default: false })
@@ -30,7 +30,7 @@ export class responseDto {
 }
 
 export class responseListDto {
-  @ApiProperty({ description: '인스타툰 리스트' })
+  @ApiProperty({ description: '인스타툰 리스트', default: [] })
   data: Toon[];
 
   @ApiProperty({ description: '상태 코드' })
@@ -72,7 +72,7 @@ export class responseBannerDto {
 }
 
 export class responseBannerListDto {
-  @ApiProperty({ description: '배너 리스트' })
+  @ApiProperty({ description: '배너 리스트', default: [] })
   data: Banner[];
 
   @ApiProperty({ description: '상태 코드', default: 200 })
@@ -86,7 +86,7 @@ export class responseBannerListDto {
 }
 
 export class responseTagListDto {
-  @ApiProperty({ description: '해쉬태그 리스트' })
+  @ApiProperty({ description: '해쉬태그 리스트', default: [] })
   data: HashTag[];
 
   @ApiProperty({ description: '상태 코드', default: 200 })
@@ -100,7 +100,7 @@ export class responseTagListDto {
 }
 
 export class responseTagDto {
-  @ApiProperty({ description: '인스타툰 객체' })
+  @ApiProperty({ description: '인스타툰 태그 객체' })
   data: HashTag;
 
   @ApiProperty({ description: '상태 코드' })

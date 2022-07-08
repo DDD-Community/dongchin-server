@@ -16,6 +16,7 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOperation,
+  ApiProperty,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -75,6 +76,7 @@ export class ToonController {
   @ApiOperation({ summary: '인스타툰에 태그 등록하기' })
   @ApiCreatedResponse({ status: 201, description: '성공' })
   @ApiNotFoundResponse({ status: 404, type: responseFailDto })
+  @ApiBody({ type: ToonHashTagDto })
   @UsePipes(ValidationPipe)
   @Post('/hashtag')
   registerHashtag(@Body() toonHashDto: ToonHashTagDto): Promise<any> {

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber } from 'class-validator';
 
 export class ToonHashTagDto {
-  @ApiProperty()
+  @ApiProperty({ default: [1, 2, 3] })
   @IsArray()
   hashTagIds: number[];
 
