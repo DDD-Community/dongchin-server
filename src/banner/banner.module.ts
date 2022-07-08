@@ -7,10 +7,15 @@ import { BannerService } from './banner.service';
 import { ToonToBannerRepository } from 'src/repository/toonToBanner.repository';
 
 @Module({
-  imports: [// import ToonRepository
-    TypeOrmModule.forFeature([BannerRepository, ToonRepository, ToonToBannerRepository])
+  imports: [
+    // import ToonRepository
+    TypeOrmModule.forFeature([
+      BannerRepository,
+      ToonRepository,
+      ToonToBannerRepository,
+    ]),
   ],
   controllers: [BannerController],
-  providers: [BannerService]
+  providers: [BannerService],
 })
 export class BannerModule {}

@@ -20,7 +20,8 @@ import { HashtagModule } from './hashtag/hashtag.module';
     AuthModule,
     ToonModule,
     BannerModule,
-    HashtagModule],
+    HashtagModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
