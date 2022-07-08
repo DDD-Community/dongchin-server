@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { Config } from '../nickname/constant/nickName.config';
 import { NickNameCredentialDto } from '../nickname/dto/nickname-credential.dto';

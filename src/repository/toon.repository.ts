@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { ToonDto } from '../toon/dto/toon-create.dto';
 import { Toon } from '../entity/toon.entity';
@@ -10,9 +6,7 @@ import { Toon } from '../entity/toon.entity';
 @EntityRepository(Toon)
 export class ToonRepository extends Repository<Toon> {
   async createToon(toonDto: ToonDto): Promise<any> {
-    const { url, name } = toonDto;
-
-    const instaToon = this.create({ url, name });
+    const instaToon = this.create(toonDto);
 
     try {
       const result = await this.save(instaToon); // 인스타툰 링크/name 저장
@@ -25,6 +19,9 @@ export class ToonRepository extends Repository<Toon> {
     } catch (error) {
       // url 중복될 때 error
       Logger.verbose('error code', error.code);
+      if (error.code === '23502') {
+        throw new BadRequestException('column 에 추가적인 값이 필요합니다.');
+      }
       throw new BadRequestException(
         Object.assign({
           statusCode: 400,

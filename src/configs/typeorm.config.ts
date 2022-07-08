@@ -1,4 +1,4 @@
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 //클라우드환경으로 배포
 export const typeORMConfig: TypeOrmModuleOptions = {

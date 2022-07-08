@@ -1,12 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class ToonDto {
   @ApiProperty()
   @IsString()
-  url: string; // 인스타툰의 계정 링크주소
+  authorName: string; //작가 이름
 
   @ApiProperty()
   @IsString()
-  name: string; // 계정 이름
+  instagramId: string; //인스타그램 ID
+
+  @ApiProperty()
+  @IsString()
+  description: string; //설명
+
+  @ApiProperty()
+  @IsString()
+  imgUrl: string; //이미지 url
+
+  @ApiProperty()
+  @IsString()
+  instagramUrl: string; // instagram연결 link
+
+  @ApiProperty()
+  @IsNumber()
+  likeCount: number; // 좋아요 수
 }

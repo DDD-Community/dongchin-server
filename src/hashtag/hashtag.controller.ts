@@ -84,7 +84,7 @@ export class HashtagController {
     type: responseFailDto,
   })
   @Get()
-  getSearchKeyWord(@Query('tagName') tagName: String): Promise<any> {
+  getSearchKeyWord(@Query('tagName') tagName: string): Promise<any> {
     return this.hashTagService.getSearchKeyWord(tagName);
   }
 

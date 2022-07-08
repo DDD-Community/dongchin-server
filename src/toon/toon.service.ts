@@ -97,7 +97,7 @@ export class ToonService {
         );
       }
 
-      toon.hashTags = result;
+      toon.tag = result;
       await this.toonRepository.save(toon);
       Logger.verbose('result', JSON.stringify(result));
       Logger.verbose('hashTagId', hashTagId);
@@ -159,10 +159,10 @@ export class ToonService {
       } else {
         if (boolType) {
           // boolType is true 하트 수 증가
-          toon.heartCount += 1;
+          toon.likeCount += 1;
         } else {
-          if (toon.heartCount >= 1) {
-            toon.heartCount -= 1;
+          if (toon.likeCount >= 1) {
+            toon.likeCount -= 1;
           }
         }
         const result = await this.toonRepository.save(toon);

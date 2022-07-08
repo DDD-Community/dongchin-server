@@ -70,7 +70,7 @@ export class HashtagService {
     }
   }
 
-  async getSearchKeyWord(tagName: String): Promise<any> {
+  async getSearchKeyWord(tagName: string): Promise<any> {
     try {
       const hashtag = await this.hashTagRepository
         .createQueryBuilder('hashtag')
@@ -86,7 +86,7 @@ export class HashtagService {
       const result = [];
       toons.forEach((toon) => {
         // keyword를 가지고 있는 인스타툰 filtering
-        toon.hashTags.forEach((tag) => {
+        toon.tag.forEach((tag) => {
           if (tag.title === hashtag.title) {
             result.push(toon);
           }

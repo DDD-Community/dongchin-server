@@ -3,14 +3,12 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Config } from './constant/nickName.config';
 import { NickNameCredentialDto } from './dto/nickname-credential.dto';
 import { Nickname } from '../entity/nickname.entity';
 import { NicknameRepository } from '../repository/nickname.repository';
-import { responseFailDto } from 'src/api/globalDTO';
 
 @Injectable()
 export class NicknameService {
@@ -42,7 +40,7 @@ export class NicknameService {
   }
 
   // 닉네임 이름으로 중복체크 Function
-  async checkValidation(nickName: String): Promise<any> {
+  async checkValidation(nickName: string): Promise<any> {
     try {
       const user = await this.nickNameRepository
         .createQueryBuilder('nickname')
