@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello This is CI/CD RDS TEST!!';
+  getName(): string {
+    return 'hyuny_beeny';
   }
 }
