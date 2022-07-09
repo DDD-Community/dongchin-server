@@ -2,12 +2,14 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Param,
   ParseBoolPipe,
   ParseIntPipe,
   Patch,
   Post,
   Query,
+  Res,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -16,10 +18,10 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOperation,
-  ApiProperty,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 import {
   responseFailDto,
   responseListDto,
@@ -34,6 +36,50 @@ import { ToonService } from './toon.service';
 @Controller('toons')
 export class ToonController {
   constructor(private toonService: ToonService) {}
+
+  //GET 인툰 목록
+  @ApiOperation({ summary: '인스타툰 목록' })
+  @ApiResponse({ status: 200, description: '성공', type: responseListDto })
+  @Get()
+  getAllToons() {
+    return this.toonService.getAllToons();
+  }
+
+  //GET 인스타툰 html 정적로드 하기
+  @ApiOperation({
+    summary: 'html render API',
+  })
+  @Get('/page')
+  showHtmlRendering(@Query('name') name: string, @Res() res: Response) {
+    return res.render(this.toonService.showHtmlRendering(name));
+  }
+
+  //GET 인툰 정보
+  @ApiOperation({ summary: '서버에서 지정한 id에 따른 인툰 정보' })
+  @ApiResponse({ status: 200 })
+  @Get('/:id')
+  getToonById(@Param('id', ParseIntPipe) id: number) {
+    return this.toonService.getToonById(id);
+  }
+
+  //GET 최근 등록 순으로 인스타툰 가져오기
+  @ApiOperation({ summary: '새롭게 등록된 툰 API' })
+  @ApiResponse({ status: 200, description: '성공', type: responseListDto })
+  @ApiNotFoundResponse({
+    status: 404,
+    description: '툰이 존재하지 않음',
+    type: responseFailDto,
+  })
+  @Get('/recent')
+  getRecentToons(): Promise<any> {
+    return this.toonService.getRecentToons();
+  }
+
+  @ApiOperation({ summary: '실시간 인기툰 API' })
+  @Get('/popular-list')
+  getPopularList(): Promise<any> {
+    return this.toonService.getPopularList();
+  }
 
   //POST 인툰 생성
   @ApiOperation({ summary: '인스타툰 링크생성' })
@@ -52,14 +98,6 @@ export class ToonController {
   @UsePipes(ValidationPipe)
   createToon(@Body() toonDto: ToonDto): Promise<any> {
     return this.toonService.createToon(toonDto);
-  }
-
-  //GET 인툰 목록
-  @ApiOperation({ summary: '인스타툰 목록' })
-  @ApiResponse({ status: 200, description: '성공', type: responseListDto })
-  @Get()
-  getAllToons() {
-    return this.toonService.getAllToons();
   }
 
   //POST 배너에 Toon 등록하기
@@ -83,26 +121,7 @@ export class ToonController {
     return this.toonService.registerHashtag(toonHashDto);
   }
 
-  //GET 최근 등록 순으로 인스타툰 가져오기
-  @ApiOperation({ summary: '새롭게 등록된 툰 API' })
-  @ApiResponse({ status: 200, description: '성공', type: responseListDto })
-  @ApiNotFoundResponse({
-    status: 404,
-    description: '툰이 존재하지 않음',
-    type: responseFailDto,
-  })
-  @Get('/recent')
-  getRecentToons(): Promise<any> {
-    return this.toonService.getRecentToons();
-  }
-
-  @ApiOperation({ summary: '실시간 인기툰 API' })
-  @Get('/popular-list')
-  getPopularList(): Promise<any> {
-    return this.toonService.getPopularList();
-  }
-
-  //GET 인스타툰 작품마다 좋아요 누르기
+  //PATCH 인스타툰 작품마다 좋아요 누르기
   @ApiOperation({
     summary:
       '인스타툰 작품에 좋아요/하트 API count수 증가: key=true 감소: key=false',
