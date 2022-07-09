@@ -44,6 +44,19 @@ export class ToonService {
     });
   }
 
+  async getToonById(id: number) {
+    const query = this.toonRepository.createQueryBuilder('toon');
+    const toon = await query
+      .innerJoinAndSelect('toon.tag', 'tag')
+      .where('toon.id = :id', { id: id })
+      .getOne();
+
+    if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
+
+    console.log(toon);
+    return toon;
+  }
+
   //인스타툰 배너에 등록하기
   async registerToBanner(relationDto: RelationDto): Promise<any> {
     try {
@@ -186,5 +199,9 @@ export class ToonService {
       .execute();
 
     return toons;
+  }
+
+  showHtmlRendering(name: string): string {
+    return name;
   }
 }

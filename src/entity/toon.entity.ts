@@ -44,6 +44,10 @@ export class Toon extends BaseEntity {
   @ApiProperty({ description: '인스타그램 연결 link' })
   public instagramUrl: string;
 
+  @Column({ default: 'link' })
+  @ApiProperty({ description: '인스타그램 html link' })
+  public htmlUrl: string;
+
   @Column({ default: 0 })
   @ApiProperty({ description: '하트/좋아요 수' })
   public likeCount: number;

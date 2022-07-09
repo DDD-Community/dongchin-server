@@ -23,6 +23,10 @@ export class ToonDto {
   instagramUrl: string; // instagram연결 link
 
   @ApiProperty()
+  @IsString()
+  htmlUrl: string;
+
+  @ApiProperty()
   @IsNumber()
   likeCount: number; // 좋아요 수
 }
