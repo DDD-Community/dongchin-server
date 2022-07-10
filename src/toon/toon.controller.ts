@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
   Param,
   ParseBoolPipe,
   ParseIntPipe,
@@ -36,15 +35,6 @@ import { ToonService } from './toon.service';
 @Controller('toons')
 export class ToonController {
   constructor(private toonService: ToonService) {}
-
-  //GET 인툰 목록
-  @ApiOperation({ summary: '인스타툰 목록' })
-  @ApiResponse({ status: 200, description: '성공', type: responseListDto })
-  @Get()
-  getAllToons() {
-    return this.toonService.getAllToons();
-  }
-
   //GET 인스타툰 html 정적로드 하기
   @ApiOperation({
     summary: 'html render API',
@@ -52,14 +42,6 @@ export class ToonController {
   @Get('/page')
   showHtmlRendering(@Query('name') name: string, @Res() res: Response) {
     return res.render(this.toonService.showHtmlRendering(name));
-  }
-
-  //GET 인툰 정보
-  @ApiOperation({ summary: '서버에서 지정한 id에 따른 인툰 정보' })
-  @ApiResponse({ status: 200 })
-  @Get('/:id')
-  getToonById(@Param('id', ParseIntPipe) id: number) {
-    return this.toonService.getToonById(id);
   }
 
   //GET 최근 등록 순으로 인스타툰 가져오기
@@ -79,6 +61,34 @@ export class ToonController {
   @Get('/popular-list')
   getPopularList(): Promise<any> {
     return this.toonService.getPopularList();
+  }
+  //GET 인툰 목록
+  @ApiOperation({ summary: '인스타툰 목록' })
+  @ApiResponse({ status: 200, description: '성공', type: responseListDto })
+  @Get()
+  getAllToons() {
+    return this.toonService.getAllToons();
+  }
+
+  //GET 인툰 정보
+  @ApiOperation({ summary: '서버에서 지정한 id에 따른 인툰 정보' })
+  @ApiResponse({ status: 200 })
+  @Get('/:id')
+  getToonById(@Param('id', ParseIntPipe) id: number) {
+    return this.toonService.getToonById(id);
+  }
+
+  //PATCH 인스타툰 작품마다 좋아요 누르기
+  @ApiOperation({
+    summary:
+      '인스타툰 작품에 좋아요/하트 API count수 증가: key=true 감소: key=false',
+  })
+  @Patch('/:id')
+  makeHeartCount(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('key', ParseBoolPipe) boolType: boolean,
+  ): Promise<any> {
+    return this.toonService.makeHeartCount(id, boolType);
   }
 
   //POST 인툰 생성
@@ -119,18 +129,5 @@ export class ToonController {
   @Post('/hashtag')
   registerHashtag(@Body() toonHashDto: ToonHashTagDto): Promise<any> {
     return this.toonService.registerHashtag(toonHashDto);
-  }
-
-  //PATCH 인스타툰 작품마다 좋아요 누르기
-  @ApiOperation({
-    summary:
-      '인스타툰 작품에 좋아요/하트 API count수 증가: key=true 감소: key=false',
-  })
-  @Patch('/:id')
-  makeHeartCount(
-    @Param('id', ParseIntPipe) id: number,
-    @Query('key', ParseBoolPipe) boolType: boolean,
-  ): Promise<any> {
-    return this.toonService.makeHeartCount(id, boolType);
   }
 }
