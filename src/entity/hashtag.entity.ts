@@ -1,15 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
 @Unique(['title']) // 태그 이름 중복 체크
-export class HashTag extends BaseEntity {
+export class HashTag {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: '태그 id', default: 1 })
   public id: number;

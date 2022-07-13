@@ -2,6 +2,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Banner } from 'src/entity/banner.entity';
 import { HashTag } from 'src/entity/hashtag.entity';
 import { Nickname } from 'src/entity/nickname.entity';
+import { Storage } from 'src/entity/storage.entity';
 import { Toon } from 'src/entity/toon.entity';
 import { ToonToBanner } from 'src/entity/toonToBanner.entity';
 
@@ -13,6 +14,6 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [Banner, HashTag, Nickname, Toon, ToonToBanner],
+  entities: [Banner, HashTag, Nickname, Toon, ToonToBanner, Storage],
   synchronize: true,
 };
