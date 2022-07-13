@@ -86,15 +86,28 @@ export class NicknameController {
   @ApiResponse({
     status: 404,
     description: '실패: 찾을 수 없는 닉네임의 id',
-    type: responseFailDto,
+    schema: {
+      example: {
+        statusCode: 404,
+        ok: false,
+        message: '닉네임을 찾을 수 없습니다.',
+      },
+    },
   })
   @ApiOkResponse({
     status: 200,
     description: '성공: 닉네임 삭제 성공',
-    type: responseDto,
+    schema: {
+      example: {
+        statusCode: 200,
+        ok: true,
+        message: '닉네임이 삭제되었습니다.',
+      },
+    },
   })
-  @Delete('/:id')
-  deleteById(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    return this.nicknameService.deleteById(id);
+  @Delete()
+  @UsePipes(ValidationPipe)
+  deleteById(@Query('nickName') nickName: string): Promise<any> {
+    return this.nicknameService.deleteBynickName(nickName);
   }
 }
