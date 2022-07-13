@@ -113,10 +113,14 @@ export class NicknameService {
   }
 
   //닉네임 삭제 function
-  async deleteById(id: number): Promise<any> {
+  async deleteBynickName(nickName: string): Promise<any> {
     try {
-      const user = await this.getNickNameById(id);
-      const result = await this.nickNameRepository.delete({ id: id });
+      const result = await this.nickNameRepository
+        .createQueryBuilder()
+        .delete()
+        .from(Nickname)
+        .where('nickName = :nickName', { nickName: nickName })
+        .execute();
 
       if (result.affected === this.FAIL_DELETE) {
         // delete 결과가 잘못됐다면
@@ -124,12 +128,11 @@ export class NicknameService {
           Object.assign({
             statusCode: 404,
             ok: false,
-            message: 'id를 찾을 수 없습니다.',
+            message: '닉네임을 찾을 수 없습니다.',
           }),
         );
       } else {
         return Object.assign({
-          data: user,
           statusCode: 200,
           ok: true,
           message: '닉네임이 삭제되었습니다.',
