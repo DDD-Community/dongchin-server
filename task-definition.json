@@ -9,7 +9,7 @@
         "logDriver": "awslogs",
         "secretOptions": null,
         "options": {
-          "awslogs-group": "/ecs/my-app-new-task",
+          "awslogs-group": "/ecs/my-app-task",
           "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs"
         }
@@ -31,13 +31,34 @@
       "dnsServers": null,
       "mountPoints": [],
       "workingDirectory": null,
-      "secrets": null,
+      "secrets": [
+        {
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:789601804520:secret:dongchin_DB_USERNAME-jntlBi",
+          "name": "DB_USERNAME"
+        },
+        {
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:789601804520:secret:dongchin_DB_PASSWORD-23xDna",
+          "name": "DB_PASSWORD"
+        },
+        {
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:789601804520:secret:dongchin_DB_DATABASE-9RY2My",
+          "name": "DB_DATABASE"
+        },
+        {
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:789601804520:secret:dongchin_DB_HOST-0bYQXQ",
+          "name": "DB_HOST"
+        },
+        {
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-2:789601804520:secret:dongchin_DB_PORT-eOCByn",
+          "name": "DB_PORT"
+        }
+      ],
       "dockerSecurityOptions": null,
       "memory": null,
       "memoryReservation": null,
       "volumesFrom": [],
       "stopTimeout": null,
-      "image": "789601804520.dkr.ecr.ap-northeast-2.amazonaws.com/dongchin-repository:c6feb4e4314f7ec6246a06846f2e05d1fb482992",
+      "image": "789601804520.dkr.ecr.ap-northeast-2.amazonaws.com/dongchin-repository:2e724dc74b52df4dfa69a68044a2a2dff31c7dab",
       "startTimeout": null,
       "firelensConfiguration": null,
       "dependsOn": null,
@@ -58,11 +79,11 @@
     }
   ],
   "placementConstraints": [],
-  "memory": "3072",
+  "memory": "1024",
   "taskRoleArn": "arn:aws:iam::789601804520:role/ecsTaskExecutionRole",
   "compatibilities": ["EC2", "FARGATE"],
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:789601804520:task-definition/my-app-new-task:1",
-  "family": "my-app-new-task",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:789601804520:task-definition/my-app-task:29",
+  "family": "my-app-task",
   "requiresAttributes": [
     {
       "targetId": null,
@@ -87,6 +108,12 @@
       "targetType": null,
       "value": null,
       "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "ecs.capability.secrets.asm.environment-variables"
     },
     {
       "targetId": null,
@@ -117,8 +144,8 @@
   "requiresCompatibilities": ["FARGATE"],
   "networkMode": "awsvpc",
   "runtimePlatform": null,
-  "cpu": "1024",
-  "revision": 1,
+  "cpu": "512",
+  "revision": 29,
   "status": "ACTIVE",
   "inferenceAccelerators": null,
   "proxyConfiguration": null,
