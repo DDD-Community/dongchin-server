@@ -11,9 +11,7 @@ export class NicknameRepository extends Repository<Nickname> {
   ): Promise<{ statusCode: number; ok: boolean; id?: number; error?: string }> {
     // 닉네임 생성 Function
     const { nickName } = nicknameCredentialDto;
-
     const user = this.create({ nickName });
-
     try {
       // 닉네임 중복되지 않는다면
       await this.save(user);
