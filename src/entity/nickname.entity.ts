@@ -19,6 +19,9 @@ export class Nickname {
   @ApiProperty({ description: '닉네임', default: 'yong' })
   nickName: string;
 
-  @OneToMany(() => Storage, (storage) => storage.nickname)
-  storages: Storage[];
+  @OneToMany(() => Storage, (storage) => storage.nickname, {
+    onDelete: 'CASCADE',
+    lazy: true,
+  })
+  storages: Promise<Storage[]>;
 }

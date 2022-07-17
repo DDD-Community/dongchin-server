@@ -11,4 +11,8 @@ export class Storage {
 
   @ManyToOne(() => Nickname, (nickname) => nickname.storages, { lazy: true })
   nickname: Nickname;
+
+  save(nickname: Nickname) {
+    this.nickname = nickname;
+  }
 }

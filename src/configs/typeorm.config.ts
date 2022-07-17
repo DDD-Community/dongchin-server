@@ -16,4 +16,5 @@ export const typeORMConfig: TypeOrmModuleOptions = {
   database: process.env.DB_DATABASE,
   entities: [Banner, HashTag, Nickname, Toon, ToonToBanner, Storage],
   synchronize: true,
+  logging: true,
 };

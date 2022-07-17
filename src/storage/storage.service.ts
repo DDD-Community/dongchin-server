@@ -22,4 +22,12 @@ export class StorageService {
       return user;
     }
   }
+  async getStorageByNickname(nickName: string) {
+    const nickname = await this.nicknameRepository.findOne({
+      nickName: nickName,
+    });
+    const storages = await nickname.storages;
+    console.log(storages);
+    return storages;
+  }
 }

@@ -15,7 +15,10 @@ export class NicknameRepository extends Repository<Nickname> {
     const { nickName } = nicknameCredentialDto;
     const storage = storageRepository.create({ name: '기본 보관함' });
     const nickname = this.create({ nickName });
-    storage.nickname = nickname;
+    /**
+     * storage의 nickname 저장 logic
+     */
+    storage.save(nickname);
     try {
       // 닉네임 중복되지 않는다면
       await this.save(nickname);
