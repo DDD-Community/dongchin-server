@@ -14,12 +14,13 @@ export class StorageService {
   ) {}
 
   async createStorage(name: string, nickName: string) {
-    const user = await this.nicknameRepository.find({ nickName: nickName });
-    if (user.length === 0) {
-      console.log('hi');
+    const nickname = await this.nicknameRepository.findOne({
+      nickName: nickName,
+    });
+    if (!nickname) {
       throw new NotFoundException('nickname을 찾을 수 없습니다.');
     } else {
-      return user;
+      return this.storageRepository.createStorage(name, nickname);
     }
   }
   async getStorageByNickname(nickName: string) {
