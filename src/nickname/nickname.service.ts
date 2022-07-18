@@ -9,7 +9,7 @@ import { Config } from './constant/nickName.config';
 import { NickNameCredentialDto } from './dto/nickname-credential.dto';
 import { Nickname } from '../entity/nickname.entity';
 import { NicknameRepository } from '../repository/nickname.repository';
-import { StorageRepository } from 'src/repository/storage.repository';
+import { StorageRepository } from '../repository/storage.repository';
 
 @Injectable()
 export class NicknameService {

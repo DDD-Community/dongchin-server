@@ -131,6 +131,7 @@ export class ToonService {
     try {
       const toons = await this.toonRepository
         .createQueryBuilder('toon')
+        .leftJoinAndSelect('toon.tag', 'tag')
         .orderBy('toon.createAt', 'DESC')
         .take(3)
         .getMany();
@@ -144,7 +145,6 @@ export class ToonService {
           }),
         );
       }
-      Logger.verbose('새로 등록된 인스타툰', JSON.stringify(toons));
       return Object.assign({
         data: toons,
         statusCode: 200,
