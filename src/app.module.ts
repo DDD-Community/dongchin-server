@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { ToonModule } from './toon/toon.module';
 import { BannerModule } from './banner/banner.module';
 import { HashtagModule } from './hashtag/hashtag.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { HashtagModule } from './hashtag/hashtag.module';
     ToonModule,
     BannerModule,
     HashtagModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,11 +2,14 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NicknameController } from './nickname.controller';
 import { NicknameService } from './nickname.service';
-import { Nickname } from 'src/entity/nickname.entity';
+import { Nickname } from '../entity/nickname.entity';
 import { NicknameRepository } from 'src/repository/nickname.repository';
+import { StorageRepository } from 'src/repository/storage.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Nickname, NicknameRepository])],
+  imports: [
+    TypeOrmModule.forFeature([Nickname, NicknameRepository, StorageRepository]),
+  ],
   controllers: [NicknameController],
   providers: [NicknameService],
 })
