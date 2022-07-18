@@ -7,11 +7,11 @@ export class StorageToonDto {
     this.toonId = toonId;
   }
 
-  @ApiProperty()
+  @ApiProperty({ description: '보관함 id' })
   @IsNumber()
   storageId: number;
 
-  @ApiProperty()
+  @ApiProperty({ description: '인스타툰 id' })
   @IsNumber()
   toonId: number;
 }

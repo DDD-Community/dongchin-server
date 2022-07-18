@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  ParseIntPipe,
   Post,
   Query,
   ValidationPipe,
@@ -9,6 +12,7 @@ import {
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { StorageDto } from './dto/storage-create.dto';
 import { StorageToonDto } from './dto/storage-toon.dto';
+import { ToonsListDto } from './dto/toon-list.dto';
 import { StorageService } from './storage.service';
 @ApiTags('storages')
 @Controller('storages')
@@ -38,12 +42,23 @@ export class StorageController {
     schema: {
       example: [
         {
+          storageName: '기본 보관함',
           storageId: 2,
-          name: '기본 보관함',
+          toonImg:
+            'https://user-images.githubusercontent.com/52276038/177170605-dc8cecbe-fdcf-4252-a908-d829992c4c30.png',
+          count: 2,
         },
         {
+          storageName: '연애 보관함',
           storageId: 3,
-          name: '연애 보관함',
+          toonImg: ' ',
+          count: 0,
+        },
+        {
+          storageName: '랜덤 보관함',
+          storageId: 4,
+          toonImg: ' ',
+          count: 0,
         },
       ],
     },
@@ -51,5 +66,65 @@ export class StorageController {
   @Get('/')
   getStorageByNickname(@Query('nickName') nickName: string) {
     return this.storageService.getStorageByNickname(nickName);
+  }
+
+  @ApiOperation({ summary: '보관함 상세 조회 API' })
+  @ApiResponse({
+    schema: {
+      example: [
+        {
+          storageId: 1,
+          name: '기본 보관함',
+          toons: [
+            {
+              id: 10,
+              authorName: '현이',
+              instagramId: 'hyuny_beeny',
+              description: '하고 싶은게 많은 시각디자인과 미대생 현이의 일상',
+              imgUrl:
+                'https://user-images.githubusercontent.com/52276038/177171189-c8f546fd-4865-4480-b438-bf026f6e4e1c.png',
+              instagramUrl: 'https://instagram.com/hyuny_bee',
+              htmlUrl:
+                'http://my-app-elb-251560380.ap-northeast-2.elb.amazonaws.com/toons/page?name=hyuny_beeny',
+              likeCount: 0,
+              createAt: '2022-07-08T04:02:00.597Z',
+            },
+            {
+              id: 9,
+              authorName: '펜낙',
+              instagramId: 'pennac2016',
+              description: '포롱이와 호롱이의 달콤살벌 연애 스토리',
+              imgUrl:
+                'https://user-images.githubusercontent.com/52276038/177170605-dc8cecbe-fdcf-4252-a908-d829992c4c30.png',
+              instagramUrl: 'https://instagram.com/pennac2016',
+              htmlUrl:
+                'http://my-app-elb-251560380.ap-northeast-2.elb.amazonaws.com/toons/page?name=pennac2016',
+              likeCount: 5,
+              createAt: '2022-07-08T03:54:00.143Z',
+            },
+          ],
+        },
+      ],
+    },
+  })
+  @Get('/:id')
+  getToonsByStorageId(@Param('id', ParseIntPipe) id: number) {
+    return this.storageService.getToonsByStorageId(id);
+  }
+
+  @ApiOperation({ summary: '보관함 삭제 API' })
+  @Delete()
+  deleteStorageById(@Query('storageId') storageId: number) {
+    return this.storageService.deleteStorageById(storageId);
+  }
+
+  @ApiOperation({ summary: '보관함에 들어있는 인스타툰 삭제 API' })
+  @ApiBody({ type: ToonsListDto })
+  @Delete('/:id')
+  deleteToonsByStorageId(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) toonsIdDto: ToonsListDto,
+  ) {
+    return this.storageService.deleteToonsByStorageId(id, toonsIdDto);
   }
 }

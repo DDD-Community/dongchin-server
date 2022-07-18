@@ -17,12 +17,12 @@ export class Storage {
   @Column()
   name: string;
 
-  @ManyToOne(() => Nickname, (nickname) => nickname.storages, { lazy: true })
+  @ManyToOne(() => Nickname, (nickname) => nickname.storages)
   nickname: Nickname;
 
-  @ManyToMany(() => Toon, { lazy: true })
+  @ManyToMany(() => Toon, { eager: true })
   @JoinTable()
-  toons: Promise<Toon[]>;
+  toons: Toon[];
 
   save(nickname: Nickname) {
     this.nickname = nickname;

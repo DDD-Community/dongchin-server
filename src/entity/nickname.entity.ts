@@ -21,7 +21,6 @@ export class Nickname {
 
   @OneToMany(() => Storage, (storage) => storage.nickname, {
     onDelete: 'CASCADE',
-    lazy: true,
   })
-  storages: Promise<Storage[]>;
+  storages: Storage;
 }

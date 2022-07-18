@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class StorageDto {
   constructor(name: string, nickName: string) {
     this.name = name;
     this.nickName = nickName;
   }
-  @ApiProperty()
+  @ApiProperty({ description: '보관함 이름' })
   @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: '닉네임' })
   @IsString()
   nickName: string;
 }
