@@ -10,4 +10,9 @@ export class AppController {
   root(@Res() res: Response) {
     return res.render(this.appService.getName());
   }
+
+  @Get()
+  getHello() {
+    return 'Hello World!';
+  }
 }
