@@ -194,9 +194,10 @@ export class ToonService {
   async getPopularList(): Promise<any> {
     const toons: Toon[] = await this.toonRepository
       .createQueryBuilder('toon')
+      .leftJoinAndSelect('toon.tag', 'tag')
       .orderBy('toon.likeCount', 'DESC')
       .take(6)
-      .execute();
+      .getMany();
 
     return toons;
   }

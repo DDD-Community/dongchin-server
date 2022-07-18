@@ -45,11 +45,14 @@ export class BannerService {
 
   async getAllToonsByRandom() {
     // 랜덤 배너 가져오기
-    const toonQuery = this.toonRepository.createQueryBuilder('toon');
+    const toonQuery = this.toonRepository
+      .createQueryBuilder('toon')
+      .leftJoinAndSelect('toon.tag', 'tag');
+
     const toons = await toonQuery.getMany();
     toons.sort(() => Math.random() - 0.5);
 
-    const randomToons = toons.splice(0, 5);
+    const randomToons = toons.splice(0, 1);
     return Object.assign({
       data: randomToons,
       statusCode: 200,
