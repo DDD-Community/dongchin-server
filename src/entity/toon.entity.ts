@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -15,7 +14,7 @@ import { ToonToBanner } from './toonToBanner.entity';
 
 @Entity()
 @Unique(['instagramUrl']) // url 중복 여부 체크
-export class Toon extends BaseEntity {
+export class Toon {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: 'primary key', default: 1 })
   public id: number;

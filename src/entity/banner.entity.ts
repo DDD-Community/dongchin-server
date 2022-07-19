@@ -1,15 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ToonToBanner } from './toonToBanner.entity';
 
 @Entity()
-export class Banner extends BaseEntity {
+export class Banner {
   @PrimaryGeneratedColumn()
   @ApiProperty({ description: '배너 id', default: 1 })
   public id: number;

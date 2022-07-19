@@ -9,6 +9,7 @@ import { Config } from './constant/nickName.config';
 import { NickNameCredentialDto } from './dto/nickname-credential.dto';
 import { Nickname } from '../entity/nickname.entity';
 import { NicknameRepository } from '../repository/nickname.repository';
+import { StorageRepository } from '../repository/storage.repository';
 
 @Injectable()
 export class NicknameService {
@@ -17,13 +18,19 @@ export class NicknameService {
   constructor(
     @InjectRepository(NicknameRepository)
     private nickNameRepository: NicknameRepository,
+
+    @InjectRepository(StorageRepository)
+    private storageRepository: StorageRepository,
   ) {}
 
   //닉네임 생성 Function
   async createNickName(
     nicknameCredentialDto: NickNameCredentialDto,
   ): Promise<any> {
-    return this.nickNameRepository.createNickName(nicknameCredentialDto);
+    return this.nickNameRepository.createNickName(
+      nicknameCredentialDto,
+      this.storageRepository,
+    );
   }
 
   //닉네임 조회 Function

@@ -65,9 +65,8 @@ export class NicknameController {
   })
   @ApiCreatedResponse({ status: 201, description: '성공', type: responseDto })
   @Post() // localhost:3000/auth/create 닉네임 생성
-  @UsePipes(ValidationPipe) // 문자열 검사
   createNickName(
-    @Body() nicknameCredentialDto: NickNameCredentialDto,
+    @Body(ValidationPipe) nicknameCredentialDto: NickNameCredentialDto,
   ): Promise<any> {
     return this.nicknameService.createNickName(nicknameCredentialDto);
   }
