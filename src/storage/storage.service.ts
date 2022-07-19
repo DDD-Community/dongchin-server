@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NicknameRepository } from 'src/repository/nickname.repository';
 import { StorageRepository } from 'src/repository/storage.repository';
