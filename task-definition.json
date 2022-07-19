@@ -81,10 +81,7 @@
   "placementConstraints": [],
   "memory": "1024",
   "taskRoleArn": "arn:aws:iam::789601804520:role/ecsTaskExecutionRole",
-  "compatibilities": [
-    "EC2",
-    "FARGATE"
-  ],
+  "compatibilities": ["EC2", "FARGATE"],
   "taskDefinitionArn": "arn:aws:ecs:ap-northeast-2:789601804520:task-definition/my-app-task:29",
   "family": "my-app-task",
   "requiresAttributes": [
@@ -144,9 +141,7 @@
     }
   ],
   "pidMode": null,
-  "requiresCompatibilities": [
-    "FARGATE"
-  ],
+  "requiresCompatibilities": ["FARGATE"],
   "networkMode": "awsvpc",
   "runtimePlatform": null,
   "cpu": "512",
