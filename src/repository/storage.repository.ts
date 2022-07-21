@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { Storage } from '../entity/storage.entity';
 import { StorageDetailDto } from '../storage/dto/storage-list.dto';
-import { ToonsListDto } from 'src/storage/dto/toon-list.dto';
+import { ToonsListDto } from '../storage/dto/toon-list.dto';
 import { EntityRepository, Repository } from 'typeorm';
 import { NicknameRepository } from './nickname.repository';
 import { ToonRepository } from './toon.repository';

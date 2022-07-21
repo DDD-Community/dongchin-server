@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NicknameController } from './nickname.controller';
 import { NicknameService } from './nickname.service';
 import { Nickname } from '../entity/nickname.entity';
-import { NicknameRepository } from 'src/repository/nickname.repository';
-import { StorageRepository } from 'src/repository/storage.repository';
+import { NicknameRepository } from '../repository/nickname.repository';
+import { StorageRepository } from '../repository/storage.repository';
 
 @Module({
   imports: [

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ToonRepository } from 'src/repository/toon.repository';
+import { ToonRepository } from '../repository/toon.repository';
 import { BannerController } from './banner.controller';
 import { BannerRepository } from '../repository/banner.repository';
 import { BannerService } from './banner.service';
-import { ToonToBannerRepository } from 'src/repository/toonToBanner.repository';
+import { ToonToBannerRepository } from '../repository/toonToBanner.repository';
 
 @Module({
   imports: [
