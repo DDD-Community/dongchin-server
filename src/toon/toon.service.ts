@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BannerRepository } from 'src/repository/banner.repository';
 import { RelationDto } from './dto/relation.dto';
@@ -220,11 +225,45 @@ export class ToonService {
     key: boolean,
   ) {
     if (key) {
-      return this.recommendedRepository.addRecommended(userId, toonId);
-      return this.bookmarkRepository.addBookMark(userId, toonId);
+      const recommendResult = await this.recommendedRepository.addRecommended(
+        userId,
+        toonId,
+      );
+      const bookmarkResult = await this.bookmarkRepository.addBookMark(
+        userId,
+        toonId,
+      );
+
+      if (recommendResult === true && bookmarkResult === true) {
+        return Object.assign({
+          statusCode: 200,
+          message: '좋아요 및 북마크 추가',
+          success: true,
+        });
+      } else {
+        throw new BadRequestException(
+          '이미 좋아요 및 북마크를 등록한 툰입니다.',
+        );
+      }
     } else {
-      return this.recommendedRepository.deleteRecommended(userId, toonId);
-      return this.bookmarkRepository.deleteBookMark(userId, toonId);
+      const recommendResult =
+        await this.recommendedRepository.deleteRecommended(userId, toonId);
+      const bookmarkResult = await this.bookmarkRepository.deleteBookMark(
+        userId,
+        toonId,
+      );
+
+      if (recommendResult === true && bookmarkResult === true) {
+        return Object.assign({
+          statusCode: 200,
+          message: '좋아요 및 북마크 취소',
+          success: true,
+        });
+      } else {
+        throw new BadRequestException(
+          '이미 좋아요 및 북마크를 취소된 툰입니다.',
+        );
+      }
     }
   }
 }
