@@ -10,6 +10,8 @@ import { ToonHashTagDto } from './dto/toon-hashtag.dto';
 import { HashTagRepository } from 'src/repository/hashtag.repository';
 import { HashTag } from 'src/entity/hashtag.entity';
 import { Toon } from 'src/entity/toon.entity';
+import { BookMarkRepository } from 'src/repository/bookmark.repository';
+import { RecommnededRepository } from 'src/repository/recommended.repository';
 
 @Injectable()
 export class ToonService {
@@ -25,6 +27,12 @@ export class ToonService {
 
     @InjectRepository(HashTagRepository)
     private hashTagRepository: HashTagRepository,
+
+    @InjectRepository(BookMarkRepository)
+    private bookmarkRepository: BookMarkRepository,
+
+    @InjectRepository(RecommnededRepository)
+    private recommendedRepository: RecommnededRepository,
   ) {}
 
   // 인스타툰 링크주소 생성
@@ -204,5 +212,19 @@ export class ToonService {
 
   showHtmlRendering(name: string): string {
     return name;
+  }
+
+  async addRecommendedWithBookmark(
+    userId: number,
+    toonId: number,
+    key: boolean,
+  ) {
+    if (key) {
+      this.recommendedRepository.addRecommended(userId, toonId);
+      this.bookmarkRepository.addBookMark(userId, toonId);
+    } else {
+      this.recommendedRepository.deleteRecommended(userId, toonId);
+      this.bookmarkRepository.deleteBookMark(userId, toonId);
+    }
   }
 }

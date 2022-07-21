@@ -1,4 +1,4 @@
-import { ToonToBanner } from 'src/entity/toonToBanner.entity';
+import { ToonToBanner } from '../entity/toonToBanner.entity';
 import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(ToonToBanner)

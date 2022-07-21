@@ -62,6 +62,16 @@ export class ToonController {
   getPopularList(): Promise<any> {
     return this.toonService.getPopularList();
   }
+  //GET bookmark
+  @ApiOperation({ summary: '유저마다 좋아요 누른 툰과 북마크 툰 등록 API' })
+  @Get('isLikeBookmark')
+  addRecommendedWithBookmark(
+    @Query('userId', ParseIntPipe) userId: number,
+    @Query('toonId', ParseIntPipe) toonId: number,
+    @Query('key', ParseBoolPipe) key: boolean,
+  ) {
+    return this.toonService.addRecommendedWithBookmark(userId, toonId, key);
+  }
   //GET 인툰 목록
   @ApiOperation({ summary: '인스타툰 목록' })
   @ApiResponse({ status: 200, description: '성공', type: responseListDto })
