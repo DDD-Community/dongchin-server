@@ -220,11 +220,11 @@ export class ToonService {
     key: boolean,
   ) {
     if (key) {
-      this.recommendedRepository.addRecommended(userId, toonId);
-      this.bookmarkRepository.addBookMark(userId, toonId);
+      return this.recommendedRepository.addRecommended(userId, toonId);
+      return this.bookmarkRepository.addBookMark(userId, toonId);
     } else {
-      this.recommendedRepository.deleteRecommended(userId, toonId);
-      this.bookmarkRepository.deleteBookMark(userId, toonId);
+      return this.recommendedRepository.deleteRecommended(userId, toonId);
+      return this.bookmarkRepository.deleteBookMark(userId, toonId);
     }
   }
 }
