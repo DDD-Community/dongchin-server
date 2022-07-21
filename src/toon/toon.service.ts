@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BannerRepository } from 'src/repository/banner.repository';
 import { RelationDto } from './dto/relation.dto';
@@ -10,6 +15,8 @@ import { ToonHashTagDto } from './dto/toon-hashtag.dto';
 import { HashTagRepository } from 'src/repository/hashtag.repository';
 import { HashTag } from 'src/entity/hashtag.entity';
 import { Toon } from 'src/entity/toon.entity';
+import { BookMarkRepository } from 'src/repository/bookmark.repository';
+import { RecommnededRepository } from 'src/repository/recommended.repository';
 
 @Injectable()
 export class ToonService {
@@ -25,6 +32,12 @@ export class ToonService {
 
     @InjectRepository(HashTagRepository)
     private hashTagRepository: HashTagRepository,
+
+    @InjectRepository(BookMarkRepository)
+    private bookmarkRepository: BookMarkRepository,
+
+    @InjectRepository(RecommnededRepository)
+    private recommendedRepository: RecommnededRepository,
   ) {}
 
   // 인스타툰 링크주소 생성
@@ -204,5 +217,53 @@ export class ToonService {
 
   showHtmlRendering(name: string): string {
     return name;
+  }
+
+  async addRecommendedWithBookmark(
+    userId: number,
+    toonId: number,
+    key: boolean,
+  ) {
+    if (key) {
+      const recommendResult = await this.recommendedRepository.addRecommended(
+        userId,
+        toonId,
+      );
+      const bookmarkResult = await this.bookmarkRepository.addBookMark(
+        userId,
+        toonId,
+      );
+
+      if (recommendResult === true && bookmarkResult === true) {
+        return Object.assign({
+          statusCode: 200,
+          message: '좋아요 및 북마크 추가',
+          success: true,
+        });
+      } else {
+        throw new BadRequestException(
+          '이미 좋아요 및 북마크를 등록한 툰입니다.',
+        );
+      }
+    } else {
+      const recommendResult =
+        await this.recommendedRepository.deleteRecommended(userId, toonId);
+      const bookmarkResult = await this.bookmarkRepository.deleteBookMark(
+        userId,
+        toonId,
+      );
+
+      if (recommendResult === true && bookmarkResult === true) {
+        return Object.assign({
+          statusCode: 200,
+          message: '좋아요 및 북마크 취소',
+          success: true,
+        });
+      } else {
+        throw new BadRequestException(
+          '이미 좋아요 및 북마크를 취소된 툰입니다.',
+        );
+      }
+    }
   }
 }

@@ -16,6 +16,7 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -61,6 +62,29 @@ export class ToonController {
   @Get('/popular-list')
   getPopularList(): Promise<any> {
     return this.toonService.getPopularList();
+  }
+  //GET bookmark
+  @ApiOperation({
+    summary:
+      '유저마다 좋아요 누른 툰과 북마크 툰 등록 API / 등록: key = true 등록 취소: key = false',
+  })
+  @ApiOkResponse({
+    description: '성공',
+    schema: {
+      example: {
+        statusCode: 200,
+        message: '좋아요 및 북마크 추가 또는 취소',
+        success: true,
+      },
+    },
+  })
+  @Get('isLikeBookmark')
+  addRecommendedWithBookmark(
+    @Query('userId', ParseIntPipe) userId: number,
+    @Query('toonId', ParseIntPipe) toonId: number,
+    @Query('key', ParseBoolPipe) key: boolean,
+  ) {
+    return this.toonService.addRecommendedWithBookmark(userId, toonId, key);
   }
   //GET 인툰 목록
   @ApiOperation({ summary: '인스타툰 목록' })
