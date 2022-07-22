@@ -12,11 +12,14 @@ import {
 } from '@nestjs/common';
 import {
   ApiBody,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { responseDto } from 'src/api/globalDTO';
 import { StorageDto } from './dto/storage-create.dto';
 import { StorageToonDto } from './dto/storage-toon.dto';
 import { ToonsListDto } from './dto/toon-list.dto';
