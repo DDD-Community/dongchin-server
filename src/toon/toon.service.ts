@@ -63,11 +63,10 @@ export class ToonService {
       .innerJoinAndSelect('toon.tag', 'tag')
       .where('toon.id = :id', { id: id })
       .getOne();
-
     if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
 
     return Object.assign({
-      data: toon,
+      data: [toon],
       statusCode: 200,
       ok: true,
       message: '성공',
