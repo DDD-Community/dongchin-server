@@ -22,6 +22,11 @@ export class StorageRepository extends Repository<Storage> {
       const storage = this.create({ name: name });
       storage.save(nickname);
       await this.save(storage);
+      return Object.assign({
+        statusCode: 201,
+        ok: true,
+        message: '보관함이 생성되었습니다.',
+      });
     }
   }
 
@@ -50,7 +55,12 @@ export class StorageRepository extends Repository<Storage> {
       );
     }
     //console.log(storageDetails);
-    return storageDetails;
+    return Object.assign({
+      data: storageDetails,
+      statusCode: 200,
+      ok: true,
+      message: '보관함이 조회 성공.',
+    });
   }
 
   async addToonByStorageId(
@@ -69,10 +79,20 @@ export class StorageRepository extends Repository<Storage> {
     if (toons.length === 0) {
       storage.toons = [toon];
       await this.save(storage);
+      return Object.assign({
+        statusCode: 200,
+        ok: true,
+        message: '보관함에 인스타툰 추가 성공',
+      });
     } else {
       toons.push(toon);
       storage.toons = toons;
       await this.save(storage);
+      return Object.assign({
+        statusCode: 200,
+        ok: true,
+        message: '보관함에 인스타툰 추가 성공',
+      });
     }
   }
 
@@ -85,7 +105,12 @@ export class StorageRepository extends Repository<Storage> {
 
     if (toons.length == 0)
       throw new NotFoundException('찾을 수 없는 storageId입니다.');
-    return toons;
+    return Object.assign({
+      data: toons,
+      statusCode: 200,
+      ok: true,
+      message: '조회 성공',
+    });
   }
 
   async deleteToonsByStorageId(id: number, toonsIdDto: ToonsListDto) {
@@ -103,7 +128,11 @@ export class StorageRepository extends Repository<Storage> {
     }
     storage.toons = toons;
     await this.save(storage);
-    return storage;
+    return Object.assign({
+      statusCode: 200,
+      ok: true,
+      message: '성공',
+    });
   }
 
   async deleteStorageById(storageId: number) {
@@ -128,7 +157,7 @@ export class StorageRepository extends Repository<Storage> {
       await this.save(storage);
       return Object.assign({
         statusCode: 200,
-        success: true,
+        ok: true,
         message: '보관함 이름이 변경되었습니다.',
       });
     }
