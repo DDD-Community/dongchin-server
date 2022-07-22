@@ -94,6 +94,12 @@ export class ToonController {
     return this.toonService.getAllToons();
   }
 
+  @ApiOperation({ summary: '추천툰 API' })
+  @Get('/random')
+  getRandomToons() {
+    return this.toonService.getRandomToons();
+  }
+
   //GET 인툰 정보
   @ApiOperation({ summary: '서버에서 지정한 id에 따른 인툰 정보' })
   @ApiResponse({ status: 200 })
