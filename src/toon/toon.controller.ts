@@ -59,6 +59,39 @@ export class ToonController {
   }
 
   @ApiOperation({ summary: '실시간 인기툰 API' })
+  @ApiOkResponse({
+    status: 200,
+    schema: {
+      example: Object.assign({
+        data: [
+          {
+            id: 10,
+            authorName: '현이',
+            instagramId: 'hyuny_beeny',
+            description: '하고 싶은게 많은 시각디자인과 미대생 현이의 일상',
+            imgUrl:
+              'https://user-images.githubusercontent.com/52276038/177171189-c8f546fd-4865-4480-b438-bf026f6e4e1c.png',
+            instagramUrl: 'https://instagram.com/hyuny_bee',
+            htmlUrl:
+              'http://my-app-elb-251560380.ap-northeast-2.elb.amazonaws.com/toons/page?name=hyuny_beeny',
+            likeCount: 0,
+            createAt: '2022-07-08T04:02:00.597Z',
+            tag: [
+              {
+                id: 5,
+                title: '드로잉',
+                count: 2,
+                category: 'drawing',
+              },
+            ],
+          },
+        ],
+        statusCode: 200,
+        ok: true,
+        message: '조회 성공',
+      }),
+    },
+  })
   @Get('/popular-list')
   getPopularList(): Promise<any> {
     return this.toonService.getPopularList();
@@ -95,6 +128,17 @@ export class ToonController {
   }
 
   @ApiOperation({ summary: '추천툰 API' })
+  @ApiOkResponse({
+    status: 200,
+    schema: {
+      example: {
+        data: [],
+        statusCode: 200,
+        ok: true,
+        message: '추천 API 성공',
+      },
+    },
+  })
   @Get('/random')
   getRandomToons() {
     return this.toonService.getRandomToons();
@@ -102,7 +146,37 @@ export class ToonController {
 
   //GET 인툰 정보
   @ApiOperation({ summary: '서버에서 지정한 id에 따른 인툰 정보' })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: Object.assign({
+        data: {
+          id: 10,
+          authorName: '현이',
+          instagramId: 'hyuny_beeny',
+          description: '하고 싶은게 많은 시각디자인과 미대생 현이의 일상',
+          imgUrl:
+            'https://user-images.githubusercontent.com/52276038/177171189-c8f546fd-4865-4480-b438-bf026f6e4e1c.png',
+          instagramUrl: 'https://instagram.com/hyuny_bee',
+          htmlUrl:
+            'http://my-app-elb-251560380.ap-northeast-2.elb.amazonaws.com/toons/page?name=hyuny_beeny',
+          likeCount: 0,
+          createAt: '2022-07-08T04:02:00.597Z',
+          tag: [
+            {
+              id: 5,
+              title: '드로잉',
+              count: 2,
+              category: 'drawing',
+            },
+          ],
+        },
+        statusCode: 200,
+        ok: true,
+        message: '성공',
+      }),
+    },
+  })
   @Get('/:id')
   getToonById(@Param('id', ParseIntPipe) id: number) {
     return this.toonService.getToonById(id);

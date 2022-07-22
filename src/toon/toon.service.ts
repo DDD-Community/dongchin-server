@@ -66,7 +66,12 @@ export class ToonService {
 
     if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
 
-    return toon;
+    return Object.assign({
+      data: toon,
+      statusCode: 200,
+      ok: true,
+      message: '성공',
+    });
   }
 
   //인스타툰 배너에 등록하기
@@ -205,7 +210,12 @@ export class ToonService {
       .take(6)
       .getMany();
 
-    return toons;
+    return Object.assign({
+      data: toons,
+      statusCode: 200,
+      ok: true,
+      message: '조회 성공',
+    });
   }
 
   showHtmlRendering(name: string): string {
@@ -269,6 +279,11 @@ export class ToonService {
     toons.sort(() => Math.random() - 0.5);
 
     const randomToons = toons.splice(0, 4);
-    return randomToons;
+    return Object.assign({
+      data: randomToons,
+      statusCode: 200,
+      ok: true,
+      message: '추천 API 성공',
+    });
   }
 }
