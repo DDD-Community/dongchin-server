@@ -5,11 +5,18 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { StorageDto } from './dto/storage-create.dto';
 import { StorageToonDto } from './dto/storage-toon.dto';
 import { ToonsListDto } from './dto/toon-list.dto';
@@ -126,5 +133,24 @@ export class StorageController {
     @Body(ValidationPipe) toonsIdDto: ToonsListDto,
   ) {
     return this.storageService.deleteToonsByStorageId(id, toonsIdDto);
+  }
+
+  @ApiOkResponse({
+    status: 200,
+    schema: {
+      example: {
+        statusCode: 200,
+        success: true,
+        message: '보관함 이름이 변경되었습니다.',
+      },
+    },
+  })
+  @ApiOperation({ summary: '보관함 이름 편집 API' })
+  @Patch()
+  updateStorageName(
+    @Query('storageId', ParseIntPipe) storageId: number,
+    @Query('name') name: string,
+  ) {
+    return this.storageService.updateStorageName(storageId, name);
   }
 }

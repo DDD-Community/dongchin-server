@@ -51,4 +51,8 @@ export class StorageService {
   async deleteStorageById(storageId: number) {
     return this.storageRepository.deleteStorageById(storageId);
   }
+
+  async updateStorageName(storageId: number, name: string) {
+    return this.storageRepository.updateStorageName(storageId, name);
+  }
 }

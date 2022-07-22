@@ -79,6 +79,7 @@ export class StorageRepository extends Repository<Storage> {
   async getToonsByStorageId(id: number) {
     const toons = await this.createQueryBuilder('storage')
       .leftJoinAndSelect('storage.toons', 'toon')
+      .leftJoinAndSelect('toon.tag', 'tag')
       .andWhere('storage.storageId = :id', { id: id })
       .getMany();
 
@@ -114,6 +115,21 @@ export class StorageRepository extends Repository<Storage> {
         statusCode: 200,
         success: true,
         message: '보관함이 삭제되었습니다.',
+      });
+    }
+  }
+
+  async updateStorageName(storageId: number, name: string) {
+    const storage = await this.findOne({ storageId: storageId });
+    if (!storage) {
+      throw new NotFoundException('잘못된 storageId로 찾을 수 없습니다.');
+    } else {
+      storage.name = name;
+      await this.save(storage);
+      return Object.assign({
+        statusCode: 200,
+        success: true,
+        message: '보관함 이름이 변경되었습니다.',
       });
     }
   }

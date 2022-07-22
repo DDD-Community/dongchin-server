@@ -66,7 +66,6 @@ export class ToonService {
 
     if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
 
-    console.log(toon);
     return toon;
   }
 
@@ -88,9 +87,6 @@ export class ToonService {
       toonToBanner.banner = banner;
       toonToBanner.toon = toon;
       const result = await this.toonToBanenrRepository.save(toonToBanner);
-      Logger.verbose('banner', JSON.stringify(banner));
-      Logger.verbose('toon', JSON.stringify(toon));
-      Logger.verbose('result', JSON.stringify(result));
       return Object.assign({
         data: result,
         statusCode: 201,
@@ -125,9 +121,6 @@ export class ToonService {
 
       toon.tag = result;
       await this.toonRepository.save(toon);
-      Logger.verbose('result', JSON.stringify(result));
-      Logger.verbose('hashTagId', hashTagId);
-      Logger.verbose('toonId', toonId);
       return Object.assign({
         data: result,
         statusCode: 201,
@@ -265,5 +258,17 @@ export class ToonService {
         );
       }
     }
+  }
+
+  async getRandomToons() {
+    const toons = await this.toonRepository
+      .createQueryBuilder('toon')
+      .leftJoinAndSelect('toon.tag', 'tag')
+      .getMany();
+
+    toons.sort(() => Math.random() - 0.5);
+
+    const randomToons = toons.splice(0, 4);
+    return randomToons;
   }
 }
