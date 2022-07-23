@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,7 +14,6 @@ import { ToonHashTagDto } from './dto/toon-hashtag.dto';
 import { HashTagRepository } from 'src/repository/hashtag.repository';
 import { HashTag } from 'src/entity/hashtag.entity';
 import { Toon } from 'src/entity/toon.entity';
-import { BookMarkRepository } from 'src/repository/bookmark.repository';
 import { RecommnededRepository } from 'src/repository/recommended.repository';
 
 @Injectable()
@@ -32,9 +30,6 @@ export class ToonService {
 
     @InjectRepository(HashTagRepository)
     private hashTagRepository: HashTagRepository,
-
-    @InjectRepository(BookMarkRepository)
-    private bookmarkRepository: BookMarkRepository,
 
     @InjectRepository(RecommnededRepository)
     private recommendedRepository: RecommnededRepository,
@@ -168,35 +163,20 @@ export class ToonService {
 
   //인스타툰 작품 하트 수 증가 또는 감소 API
   async makeHeartCount(id: number, boolType: boolean): Promise<any> {
-    Logger.verbose(id, boolType);
-    try {
-      const toon = await this.toonRepository.findOne(id);
-      if (!toon) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '등록된 툰이 없습니다.',
-          }),
-        );
+    const toon = await this.toonRepository.findOne(id);
+    if (!toon) {
+      return false;
+    } else {
+      if (boolType) {
+        // boolType is true 하트 수 증가
+        toon.likeCount += 1;
       } else {
-        if (boolType) {
-          // boolType is true 하트 수 증가
-          toon.likeCount += 1;
-        } else {
-          if (toon.likeCount >= 1) {
-            toon.likeCount -= 1;
-          }
+        if (toon.likeCount >= 1) {
+          toon.likeCount -= 1;
         }
-        await this.toonRepository.save(toon);
       }
-      return Object.assign({
-        statusCode: 200,
-        ok: true,
-        message: '성공적으로 작업하였습니다.',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
+      await this.toonRepository.save(toon);
+      return true;
     }
   }
 
@@ -226,21 +206,27 @@ export class ToonService {
     toonId: number,
     key: boolean,
   ) {
+    // 툰마다 좋아요 갯수 증가
+    const result = await this.makeHeartCount(toonId, key);
+
+    if (!result) {
+      return Object.assign({
+        statusCode: 404,
+        ok: false,
+        message: 'toonId가 존재하지 않습니다.',
+      });
+    }
     if (key) {
       const recommendResult = await this.recommendedRepository.addRecommended(
         userId,
         toonId,
       );
-      const bookmarkResult = await this.bookmarkRepository.addBookMark(
-        userId,
-        toonId,
-      );
 
-      if (recommendResult === true && bookmarkResult === true) {
+      if (recommendResult === true) {
         return Object.assign({
           statusCode: 200,
+          ok: true,
           message: '좋아요 및 북마크 추가',
-          success: true,
         });
       } else {
         throw new BadRequestException(
@@ -250,16 +236,12 @@ export class ToonService {
     } else {
       const recommendResult =
         await this.recommendedRepository.deleteRecommended(userId, toonId);
-      const bookmarkResult = await this.bookmarkRepository.deleteBookMark(
-        userId,
-        toonId,
-      );
 
-      if (recommendResult === true && bookmarkResult === true) {
+      if (recommendResult === true) {
         return Object.assign({
           statusCode: 200,
+          ok: true,
           message: '좋아요 및 북마크 취소',
-          success: true,
         });
       } else {
         throw new BadRequestException(
@@ -284,5 +266,22 @@ export class ToonService {
       ok: true,
       message: '추천 API 성공',
     });
+  }
+
+  async getToonsLike(userId: number, toonId: number) {
+    const result = this.recommendedRepository.getToonsLike(userId, toonId);
+    if (!result) {
+      return Object.assign({
+        statusCode: 200,
+        ok: false,
+        message: '추천하기 취소된 상태',
+      });
+    } else {
+      return Object.assign({
+        statusCode: 200,
+        ok: true,
+        message: '인스타툰 추천하기 등록된 상태',
+      });
+    }
   }
 }

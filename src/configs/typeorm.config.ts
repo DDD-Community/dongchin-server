@@ -1,6 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Banner } from 'src/entity/banner.entity';
-import { BookMark } from 'src/entity/bookmark.entity';
 import { HashTag } from 'src/entity/hashtag.entity';
 import { Nickname } from 'src/entity/nickname.entity';
 import { Recommended } from 'src/entity/recommended.entity';
@@ -23,7 +22,6 @@ export const typeORMConfig: TypeOrmModuleOptions = {
     Toon,
     ToonToBanner,
     Storage,
-    BookMark,
     Recommended,
   ],
   synchronize: true,

@@ -1,5 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { RecommnededRepository } from 'src/repository/recommended.repository';
 import { ToonRepository } from 'src/repository/toon.repository';
 import { BannerRepository } from '../repository/banner.repository';
 import { BannerDto } from './dto/banner.dto';
@@ -12,6 +13,9 @@ export class BannerService {
 
     @InjectRepository(ToonRepository)
     private toonRepository: ToonRepository,
+
+    @InjectRepository(RecommnededRepository)
+    private recommendedRepository: RecommnededRepository,
   ) {}
 
   async createBanner(bannerDto: BannerDto) {
@@ -43,7 +47,7 @@ export class BannerService {
     }
   }
 
-  async getAllToonsByRandom() {
+  async getAllToonsByRandom(userId: number) {
     // 랜덤 배너 가져오기
     const toonQuery = this.toonRepository
       .createQueryBuilder('toon')
@@ -51,10 +55,18 @@ export class BannerService {
 
     const toons = await toonQuery.getMany();
     toons.sort(() => Math.random() - 0.5);
-
-    const randomToons = toons.splice(0, 1);
+    const randomToon = toons.splice(0, 1);
+    const result = await this.recommendedRepository.getToonsLike(
+      userId,
+      randomToon[0].id,
+    );
+    if (result) {
+      randomToon[0]['isLike'] = true;
+    } else {
+      randomToon[0]['isLike'] = false;
+    }
     return Object.assign({
-      data: randomToons,
+      data: randomToon,
       statusCode: 200,
       ok: true,
       message: '랜덤으로 툰 가져오기 성공',

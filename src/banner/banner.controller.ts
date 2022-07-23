@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -91,8 +92,8 @@ export class BannerController {
     },
   })
   @Get('/random')
-  getAllToonsByRandom() {
-    return this.bannerService.getAllToonsByRandom();
+  getAllToonsByRandom(@Query('userId', ParseIntPipe) userId: number) {
+    return this.bannerService.getAllToonsByRandom(userId);
   }
 
   @ApiOperation({ summary: 'Bannder Id에 따른 인스타툰 목록 가져오기' })

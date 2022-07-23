@@ -32,4 +32,17 @@ export class RecommnededRepository extends Repository<Recommended> {
       return true;
     }
   }
+
+  async getToonsLike(userId: number, toonId: number) {
+    const result = await this.createQueryBuilder('recommended')
+      .where('recommended.userId = :userId', { userId: userId })
+      .andWhere('recommended.toonId = :toonId', { toonId: toonId })
+      .getOne();
+
+    if (!result) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }

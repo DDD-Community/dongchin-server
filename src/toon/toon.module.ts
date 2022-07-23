@@ -11,8 +11,6 @@ import { BannerRepository } from '../repository/banner.repository';
 import { ToonToBannerRepository } from '../repository/toonToBanner.repository';
 import { HashTagRepository } from '../repository/hashtag.repository';
 import { Recommended } from '../entity/recommended.entity';
-import { BookMark } from '../entity/bookmark.entity';
-import { BookMarkRepository } from '../repository/bookmark.repository';
 import { RecommnededRepository } from '../repository/recommended.repository';
 
 @Module({
@@ -23,12 +21,10 @@ import { RecommnededRepository } from '../repository/recommended.repository';
       ToonToBanner,
       HashTag,
       Recommended,
-      BookMark,
       ToonRepository,
       BannerRepository,
       ToonToBannerRepository,
       HashTagRepository,
-      BookMarkRepository,
       RecommnededRepository,
     ]),
   ],

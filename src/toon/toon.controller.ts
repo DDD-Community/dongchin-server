@@ -99,7 +99,7 @@ export class ToonController {
   //GET bookmark
   @ApiOperation({
     summary:
-      '유저마다 좋아요 누른 툰과 북마크 툰 등록 API / 등록: key = true 등록 취소: key = false',
+      '유저마다 좋아요 누른 툰 API / 등록: key = true 등록 취소: key = false',
   })
   @ApiOkResponse({
     description: '성공',
@@ -111,7 +111,7 @@ export class ToonController {
       },
     },
   })
-  @Get('isLikeBookmark')
+  @Patch('isLike')
   addRecommendedWithBookmark(
     @Query('userId', ParseIntPipe) userId: number,
     @Query('toonId', ParseIntPipe) toonId: number,
@@ -119,6 +119,26 @@ export class ToonController {
   ) {
     return this.toonService.addRecommendedWithBookmark(userId, toonId, key);
   }
+
+  @ApiOperation({ summary: '유저마다 인스타툰 추천상태 확인 API' })
+  @ApiOkResponse({
+    description: '추천 등록 or 추천 취소',
+    schema: {
+      example: {
+        statusCode: 200,
+        ok: true,
+        message: 'true: 추천등록 상태 / false: 추천 취소',
+      },
+    },
+  })
+  @Get('isLike')
+  getToonsLike(
+    @Query('userId', ParseIntPipe) userId: number,
+    @Query('toonId', ParseIntPipe) toonId: number,
+  ) {
+    return this.toonService.getToonsLike(userId, toonId);
+  }
+
   //GET 인툰 목록
   @ApiOperation({ summary: '인스타툰 목록' })
   @ApiResponse({ status: 200, description: '성공', type: responseListDto })
@@ -182,19 +202,6 @@ export class ToonController {
   @Get('/:id')
   getToonById(@Param('id', ParseIntPipe) id: number) {
     return this.toonService.getToonById(id);
-  }
-
-  //PATCH 인스타툰 작품마다 좋아요 누르기
-  @ApiOperation({
-    summary:
-      '인스타툰 작품에 좋아요/하트 API count수 증가: key=true 감소: key=false',
-  })
-  @Patch('/:id')
-  makeHeartCount(
-    @Param('id', ParseIntPipe) id: number,
-    @Query('key', ParseBoolPipe) boolType: boolean,
-  ): Promise<any> {
-    return this.toonService.makeHeartCount(id, boolType);
   }
 
   //POST 인툰 생성
