@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Banner } from 'src/entity/banner.entity';
-import { HashTag } from 'src/entity/hashtag.entity';
-import { Nickname } from 'src/entity/nickname.entity';
-import { Toon } from 'src/entity/toon.entity';
+import { Banner } from '../entity/banner.entity';
+import { HashTag } from '../entity/hashtag.entity';
+import { Nickname } from '../entity/nickname.entity';
+import { Toon } from '../entity/toon.entity';
 
 export class responseFailDto {
   @ApiProperty({ description: '상태 코드', default: 'Error Number' })

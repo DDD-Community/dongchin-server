@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ToonRepository } from 'src/repository/toon.repository';
+import { ToonRepository } from '../repository/toon.repository';
 import { BannerRepository } from '../repository/banner.repository';
 import { BannerDto } from './dto/banner.dto';
 

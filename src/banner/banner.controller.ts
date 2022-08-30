@@ -21,7 +21,7 @@ import {
   responseBannerListDto,
   responseFailDto,
   responseListDto,
-} from 'src/api/globalDTO';
+} from '../api/globalDTO';
 import { BannerService } from './banner.service';
 import { BannerDto } from './dto/banner.dto';
 
