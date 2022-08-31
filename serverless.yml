@@ -2,9 +2,13 @@ service: dongchin-api
 
 frameworkVersion: '3'
 
+package:
+  exclude:
+    - node_modules/**
+
 plugins:
+  - serverless-plugin-optimize
   - serverless-dotenv-plugin
-  - serverless-webpack
   - serverless-offline
 
 provider:
@@ -19,8 +23,11 @@ functions:
     handler: dist/main.handler
     events:
       - http:
-          method: any
-          path: /{proxy+}
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'
 
 resources:
   Resources:
