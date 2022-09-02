@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SwaggerModule } from '@nestjs/swagger';
 import { Context, Handler } from 'aws-lambda';
 import { Server } from 'http';
 import {
@@ -10,28 +9,30 @@ import {
 import { createServer, proxy } from 'aws-serverless-express';
 import { eventContext } from 'aws-serverless-express/middleware';
 import { ValidationPipe } from '@nestjs/common';
-import { BaseAPIDocumentation } from './api/base.document';
 import { join } from 'path';
-import express from 'express';
+import { SwaggerSetup } from './util/swagger';
 const binaryMimeTypes: string[] = [];
-
+const express = require('express');
 let cachedServer: Server;
 
 async function bootstrapServer(): Promise<Server> {
   if (!cachedServer) {
     const expressApp = express();
+    // const publicDirectPath = join(__dirname, '../public');
+    // const viewPath = join(__dirname, '../views');
+    // expressApp.set('view engine', 'hbs');
+    // expressApp.set('views', viewPath);
+    // expressApp.use(express.static(publicDirectPath));
     const nestApp = await NestFactory.create<NestExpressApplication>(
       AppModule,
       new ExpressAdapter(expressApp),
     );
-    const documentOptions = new BaseAPIDocumentation().initializeOptions();
-    const document = SwaggerModule.createDocument(nestApp, documentOptions);
-    SwaggerModule.setup('api/v1/docs', nestApp, document);
+    nestApp.use(eventContext());
+    nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
+    SwaggerSetup(nestApp);
     nestApp.useStaticAssets(join(__dirname, '..', 'public'));
     nestApp.setBaseViewsDir(join(__dirname, '..', 'views'));
     nestApp.setViewEngine('hbs');
-    nestApp.use(eventContext());
-    nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
     await nestApp.init();
     await nestApp.listen(3000);
     cachedServer = createServer(expressApp, undefined, binaryMimeTypes);
@@ -41,6 +42,13 @@ async function bootstrapServer(): Promise<Server> {
 
 export const handler: Handler = async (event: any, context: Context) => {
   context.callbackWaitsForEmptyEventLoop = false;
+  if (event.path === '/api-docs') event.path = '/api-docs/';
+
+  event.path = event.path.includes('swagger-ui')
+    ? `/api-docs${event.path}`
+    : event.path;
+
   cachedServer = await bootstrapServer();
   return proxy(cachedServer, event, context, 'PROMISE').promise;
 };
+if (!process.env.NODE_ENV) bootstrapServer();
