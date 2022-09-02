@@ -11,6 +11,7 @@ import { eventContext } from 'aws-serverless-express/middleware';
 import { ValidationPipe } from '@nestjs/common';
 import { join } from 'path';
 import { SwaggerSetup } from './util/swagger';
+import { resolve } from 'path';
 const binaryMimeTypes: string[] = [];
 const express = require('express');
 let cachedServer: Server;
@@ -30,8 +31,8 @@ async function bootstrapServer(): Promise<Server> {
     nestApp.use(eventContext());
     nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
     SwaggerSetup(nestApp);
-    nestApp.useStaticAssets(join(__dirname, '..', 'public'));
-    nestApp.setBaseViewsDir(join(__dirname, '..', 'views'));
+    nestApp.useStaticAssets(resolve('./src/public'));
+    nestApp.setBaseViewsDir(resolve('./src/views'));
     nestApp.setViewEngine('hbs');
     await nestApp.init();
     await nestApp.listen(3000);
@@ -51,4 +52,3 @@ export const handler: Handler = async (event: any, context: Context) => {
   cachedServer = await bootstrapServer();
   return proxy(cachedServer, event, context, 'PROMISE').promise;
 };
-if (!process.env.NODE_ENV) bootstrapServer();
