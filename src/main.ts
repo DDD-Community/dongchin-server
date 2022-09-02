@@ -12,7 +12,6 @@ import { eventContext } from 'aws-serverless-express/middleware';
 import { ValidationPipe } from '@nestjs/common';
 import { BaseAPIDocumentation } from './api/base.document';
 import { join } from 'path';
-
 import express from 'express';
 const binaryMimeTypes: string[] = [];
 
