@@ -1,4 +1,4 @@
-import { BookMark } from 'src/entity/bookmark.entity';
+import { BookMark } from '../entity/bookmark.entity';
 import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(BookMark)

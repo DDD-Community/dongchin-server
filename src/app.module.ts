@@ -10,7 +10,9 @@ import { ToonModule } from './toon/toon.module';
 import { BannerModule } from './banner/banner.module';
 import { HashtagModule } from './hashtag/hashtag.module';
 import { StorageModule } from './storage/storage.module';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 @Module({
   imports: [
     TypeOrmModule.forRoot(typeORMConfig),

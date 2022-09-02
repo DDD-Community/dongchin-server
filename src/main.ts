@@ -1,20 +1,54 @@
 import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { SwaggerModule } from '@nestjs/swagger';
-import { join } from 'path';
-import { BaseAPIDocumentation } from './api/base.document';
 import { AppModule } from './app.module';
+import { Context, Handler } from 'aws-lambda';
+import { Server } from 'http';
+import {
+  ExpressAdapter,
+  NestExpressApplication,
+} from '@nestjs/platform-express';
+import { createServer, proxy } from 'aws-serverless-express';
+import { eventContext } from 'aws-serverless-express/middleware';
+import { ValidationPipe } from '@nestjs/common';
+import { join } from 'path';
+import { SwaggerSetup } from './util/swagger';
+import { resolve } from 'path';
+const binaryMimeTypes: string[] = [];
+const express = require('express');
+let cachedServer: Server;
 
-async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
-  /* mount Swagger API Documentation */
-  const documentOptions = new BaseAPIDocumentation().initializeOptions();
-  const document = SwaggerModule.createDocument(app, documentOptions);
-  SwaggerModule.setup('api/v1/docs', app, document);
-  app.useStaticAssets(join(__dirname, '..', 'public'));
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.setViewEngine('hbs');
-  await app.listen(3000);
+async function bootstrapServer(): Promise<Server> {
+  if (!cachedServer) {
+    const expressApp = express();
+    // const publicDirectPath = join(__dirname, '../public');
+    // const viewPath = join(__dirname, '../views');
+    // expressApp.set('view engine', 'hbs');
+    // expressApp.set('views', viewPath);
+    // expressApp.use(express.static(publicDirectPath));
+    const nestApp = await NestFactory.create<NestExpressApplication>(
+      AppModule,
+      new ExpressAdapter(expressApp),
+    );
+    nestApp.use(eventContext());
+    nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
+    SwaggerSetup(nestApp);
+    nestApp.useStaticAssets(resolve('./src/public'));
+    nestApp.setBaseViewsDir(resolve('./src/views'));
+    nestApp.setViewEngine('hbs');
+    await nestApp.init();
+    await nestApp.listen(3000);
+    cachedServer = createServer(expressApp, undefined, binaryMimeTypes);
+  }
+  return cachedServer;
 }
-bootstrap();
+
+export const handler: Handler = async (event: any, context: Context) => {
+  context.callbackWaitsForEmptyEventLoop = false;
+  if (event.path === '/api-docs') event.path = '/api-docs/';
+
+  event.path = event.path.includes('swagger-ui')
+    ? `/api-docs${event.path}`
+    : event.path;
+
+  cachedServer = await bootstrapServer();
+  return proxy(cachedServer, event, context, 'PROMISE').promise;
+};

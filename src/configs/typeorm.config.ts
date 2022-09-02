@@ -1,14 +1,15 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Banner } from 'src/entity/banner.entity';
-import { BookMark } from 'src/entity/bookmark.entity';
-import { HashTag } from 'src/entity/hashtag.entity';
-import { Nickname } from 'src/entity/nickname.entity';
-import { Recommended } from 'src/entity/recommended.entity';
-import { Storage } from 'src/entity/storage.entity';
-import { Toon } from 'src/entity/toon.entity';
-import { ToonToBanner } from 'src/entity/toonToBanner.entity';
-
+import { Banner } from '../entity/banner.entity';
+import { BookMark } from '../entity/bookmark.entity';
+import { HashTag } from '../entity/hashtag.entity';
+import { Nickname } from '../entity/nickname.entity';
+import { Recommended } from '../entity/recommended.entity';
+import { Storage } from '../entity/storage.entity';
+import { Toon } from '../entity/toon.entity';
+import { ToonToBanner } from '../entity/toonToBanner.entity';
+import * as dotenv from 'dotenv';
 //클라우드환경으로 배포
+dotenv.config();
 export const typeORMConfig: TypeOrmModuleOptions = {
   type: 'postgres',
   host: process.env.DB_HOST,

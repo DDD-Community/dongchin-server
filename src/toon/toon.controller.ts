@@ -26,7 +26,7 @@ import {
   responseFailDto,
   responseListDto,
   responseToonDto,
-} from 'src/api/globalDTO';
+} from '../api/globalDTO';
 import { RelationDto } from './dto/relation.dto';
 import { ToonDto } from './dto/toon-create.dto';
 import { ToonHashTagDto } from './dto/toon-hashtag.dto';
