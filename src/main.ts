@@ -9,7 +9,6 @@ import {
 import { createServer, proxy } from 'aws-serverless-express';
 import { eventContext } from 'aws-serverless-express/middleware';
 import { ValidationPipe } from '@nestjs/common';
-import { join } from 'path';
 import { SwaggerSetup } from './util/swagger';
 import { resolve } from 'path';
 const binaryMimeTypes: string[] = [];

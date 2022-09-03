@@ -5,6 +5,8 @@ frameworkVersion: '3'
 package:
   exclude:
     - node_modules/**
+  include:
+    - src/views/**
 
 plugins:
   - serverless-plugin-optimize
