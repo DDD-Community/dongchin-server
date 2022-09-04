@@ -3,8 +3,10 @@ service: dongchin-api
 frameworkVersion: '3'
 
 package:
-  exclude:
-    - node_modules/**
+  patterns:
+    - src/**
+    - main.ts
+    - '!node_modules/**'
 
 plugins:
   - serverless-plugin-optimize
