@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HashTagRepository } from 'src/repository/hashtag.repository';
-import { ToonRepository } from 'src/repository/toon.repository';
+import { HashTagRepository } from '../repository/hashtag.repository';
+import { ToonRepository } from '../repository/toon.repository';
 import { HashTagDto } from './dto/hashtag-create.dto';
 
 @Injectable()

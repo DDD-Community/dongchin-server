@@ -5,18 +5,18 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BannerRepository } from 'src/repository/banner.repository';
+import { BannerRepository } from '../repository/banner.repository';
 import { RelationDto } from './dto/relation.dto';
 import { ToonDto } from './dto/toon-create.dto';
 import { ToonRepository } from '../repository/toon.repository';
-import { ToonToBannerRepository } from 'src/repository/toonToBanner.repository';
-import { ToonToBanner } from 'src/entity/toonToBanner.entity';
+import { ToonToBannerRepository } from '../repository/toonToBanner.repository';
+import { ToonToBanner } from '../entity/toonToBanner.entity';
 import { ToonHashTagDto } from './dto/toon-hashtag.dto';
-import { HashTagRepository } from 'src/repository/hashtag.repository';
-import { HashTag } from 'src/entity/hashtag.entity';
-import { Toon } from 'src/entity/toon.entity';
-import { BookMarkRepository } from 'src/repository/bookmark.repository';
-import { RecommnededRepository } from 'src/repository/recommended.repository';
+import { HashTagRepository } from '../repository/hashtag.repository';
+import { HashTag } from '../entity/hashtag.entity';
+import { Toon } from '../entity/toon.entity';
+import { BookMarkRepository } from '../repository/bookmark.repository';
+import { RecommnededRepository } from '../repository/recommended.repository';
 
 @Injectable()
 export class ToonService {

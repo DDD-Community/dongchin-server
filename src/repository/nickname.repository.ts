@@ -42,7 +42,6 @@ export class NicknameRepository extends Repository<Nickname> {
           }),
         );
       }
-      console.log(error.code);
     }
   }
 }

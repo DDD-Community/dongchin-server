@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { responseDto, responseFailDto } from 'src/api/globalDTO';
+import { responseDto, responseFailDto } from '../api/globalDTO';
 import { NickNameCredentialDto } from './dto/nickname-credential.dto';
 import { NicknameService } from './nickname.service';
 
