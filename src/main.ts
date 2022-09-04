@@ -12,17 +12,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { SwaggerSetup } from './util/swagger';
 import { resolve } from 'path';
 const binaryMimeTypes: string[] = [];
-const express = require('express');
+import express from 'express';
 let cachedServer: Server;
 
 async function bootstrapServer(): Promise<Server> {
   if (!cachedServer) {
     const expressApp = express();
-    // const publicDirectPath = join(__dirname, '../public');
-    // const viewPath = join(__dirname, '../views');
-    // expressApp.set('view engine', 'hbs');
-    // expressApp.set('views', viewPath);
-    // expressApp.use(express.static(publicDirectPath));
     const nestApp = await NestFactory.create<NestExpressApplication>(
       AppModule,
       new ExpressAdapter(expressApp),
