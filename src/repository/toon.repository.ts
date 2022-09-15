@@ -1,4 +1,4 @@
-import { BadRequestException, Logger } from '@nestjs/common';
+import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { ToonDto } from '../toon/dto/toon-create.dto';
 import { Toon } from '../entity/toon.entity';
@@ -48,5 +48,49 @@ export class ToonRepository extends Repository<Toon> {
       .where('toon.id = :id', { id: toonId })
       .getOne();
     return toon;
+  }
+
+  async getRecentToons() {
+    try {
+      const toons = await this.createQueryBuilder('toon')
+        .leftJoinAndSelect('toon.tag', 'tag')
+        .orderBy('toon.createAt', 'DESC')
+        .take(3)
+        .getMany();
+
+      if (!toons) {
+        throw new NotFoundException(
+          Object.assign({
+            statusCode: 404,
+            ok: false,
+            message: '등록된 툰이 없습니다.',
+          }),
+        );
+      }
+      return Object.assign({
+        data: toons,
+        statusCode: 200,
+        ok: true,
+        message: '최근 등록된 인스타툰 목록',
+      });
+    } catch (NotFoundException) {
+      throw NotFoundException;
+    }
+  }
+
+  async getRandomToons() {
+    const toons = await this.createQueryBuilder('toon')
+      .leftJoinAndSelect('toon.tag', 'tag')
+      .getMany();
+
+    toons.sort(() => Math.random() - 0.5);
+
+    const randomToons = toons.splice(0, 4);
+    return Object.assign({
+      data: randomToons,
+      statusCode: 200,
+      ok: true,
+      message: '추천 API 성공',
+    });
   }
 }

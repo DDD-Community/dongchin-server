@@ -51,6 +51,17 @@ export class ToonService {
     return this.toonRepository.getAllToons();
   }
 
+  // 새로 등록된 인스타툰 API
+  async getRecentToons(): Promise<any> {
+    return this.toonRepository.getRecentToons();
+  }
+
+  // 랜덤 툰 API
+  async getRandomToons() {
+    return this.toonRepository.getRandomToons();
+  }
+
+  // 인스타툰 상세 정보 가져오기
   async getToonById(userId: number, toonId: number) {
     let toonDetail: ToonDetailDto;
     const toon = await this.toonRepository.getToonById(toonId);
@@ -129,36 +140,6 @@ export class ToonService {
         statusCode: 201,
         ok: true,
         message: '인스타툰에 태그가 등록되었습니다.',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
-  }
-
-  // 새로 등록된 인스타툰 API
-  async getRecentToons(): Promise<any> {
-    try {
-      const toons = await this.toonRepository
-        .createQueryBuilder('toon')
-        .leftJoinAndSelect('toon.tag', 'tag')
-        .orderBy('toon.createAt', 'DESC')
-        .take(3)
-        .getMany();
-
-      if (!toons) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '등록된 툰이 없습니다.',
-          }),
-        );
-      }
-      return Object.assign({
-        data: toons,
-        statusCode: 200,
-        ok: true,
-        message: '최근 등록된 인스타툰 목록',
       });
     } catch (NotFoundException) {
       throw NotFoundException;
@@ -266,22 +247,5 @@ export class ToonService {
         );
       }
     }
-  }
-
-  async getRandomToons() {
-    const toons = await this.toonRepository
-      .createQueryBuilder('toon')
-      .leftJoinAndSelect('toon.tag', 'tag')
-      .getMany();
-
-    toons.sort(() => Math.random() - 0.5);
-
-    const randomToons = toons.splice(0, 4);
-    return Object.assign({
-      data: randomToons,
-      statusCode: 200,
-      ok: true,
-      message: '추천 API 성공',
-    });
   }
 }
