@@ -48,14 +48,7 @@ export class ToonService {
 
   // 인스타툰 전체 목록 가져오기
   async getAllToons() {
-    const query = this.toonRepository.createQueryBuilder('toon');
-    const toons = await query.leftJoinAndSelect('toon.tag', 'tag').getMany();
-    return Object.assign({
-      data: toons,
-      statusCode: 200,
-      ok: true,
-      message: '인스타툰 전체 리스트입니다.',
-    });
+    return this.toonRepository.getAllToons();
   }
 
   async getToonById(userId: number, toonId: number) {
