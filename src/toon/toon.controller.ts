@@ -120,7 +120,7 @@ export class ToonController {
     return this.toonService.addRecommendedWithBookmark(userId, toonId, key);
   }
   //GET 인툰 목록
-  @ApiOperation({ summary: '인스타툰 목록' })
+  @ApiOperation({ summary: '인스타툰 전체 목록 API' })
   @ApiResponse({ status: 200, description: '성공', type: responseListDto })
   @Get()
   getAllToons() {
@@ -145,7 +145,7 @@ export class ToonController {
   }
 
   //GET 인툰 정보
-  @ApiOperation({ summary: '서버에서 지정한 id에 따른 인툰 정보' })
+  @ApiOperation({ summary: '인스타툰 상세 정보 API' })
   @ApiResponse({
     status: 200,
     schema: {
@@ -179,9 +179,12 @@ export class ToonController {
       }),
     },
   })
-  @Get('/:id')
-  getToonById(@Param('id', ParseIntPipe) id: number) {
-    return this.toonService.getToonById(id);
+  @Get('/:userId/:toonId')
+  getToonById(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('toonId', ParseIntPipe) toonId: number,
+  ) {
+    return this.toonService.getToonById(userId, toonId);
   }
 
   //PATCH 인스타툰 작품마다 좋아요 누르기

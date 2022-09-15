@@ -17,6 +17,7 @@ import { HashTag } from '../entity/hashtag.entity';
 import { Toon } from '../entity/toon.entity';
 import { BookMarkRepository } from '../repository/bookmark.repository';
 import { RecommnededRepository } from '../repository/recommended.repository';
+import { ToonDetailDto } from './dto/toon-detail.dto';
 
 @Injectable()
 export class ToonService {
@@ -57,16 +58,25 @@ export class ToonService {
     });
   }
 
-  async getToonById(id: number) {
+  async getToonById(userId: number, toonId: number) {
     const query = this.toonRepository.createQueryBuilder('toon');
+    const recommend = await this.recommendedRepository.getRecommended(
+      userId,
+      toonId,
+    );
     const toon = await query
       .leftJoinAndSelect('toon.tag', 'tag')
-      .where('toon.id = :id', { id: id })
+      .where('toon.id = :id', { id: toonId })
       .getOne();
-    if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
 
+    if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
+    if (!recommend) {
+      const toonDetail: ToonDetailDto = new ToonDetailDto(toon, false);
+    } else {
+      const toonDetail: ToonDetailDto = new ToonDetailDto(toon, true);
+    }
     return Object.assign({
-      data: [toon],
+      data: [toonDetail],
       statusCode: 200,
       ok: true,
       message: '성공',
