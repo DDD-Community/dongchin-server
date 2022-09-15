@@ -5,7 +5,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { typeORMConfig } from './configs/typeorm.config';
 import { NicknameModule } from './nickname/nickname.module';
-import { AuthModule } from './auth/auth.module';
 import { ToonModule } from './toon/toon.module';
 import { BannerModule } from './banner/banner.module';
 import { HashtagModule } from './hashtag/hashtag.module';
@@ -20,7 +19,6 @@ dotenv.config();
       isGlobal: true,
     }),
     NicknameModule,
-    AuthModule,
     ToonModule,
     BannerModule,
     HashtagModule,
