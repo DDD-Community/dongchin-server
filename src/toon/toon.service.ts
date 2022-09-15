@@ -61,6 +61,15 @@ export class ToonService {
     return this.toonRepository.getRandomToons();
   }
 
+  //실시간 인기툰 API
+  async getPopularList(): Promise<any> {
+    return this.toonRepository.getPopularList();
+  }
+
+  showHtmlRendering(name: string): string {
+    return name;
+  }
+
   // 인스타툰 상세 정보 가져오기
   async getToonById(userId: number, toonId: number) {
     let toonDetail: ToonDetailDto;
@@ -180,27 +189,7 @@ export class ToonService {
     }
   }
 
-  //실시간 인기툰 API
-  async getPopularList(): Promise<any> {
-    const toons: Toon[] = await this.toonRepository
-      .createQueryBuilder('toon')
-      .leftJoinAndSelect('toon.tag', 'tag')
-      .orderBy('toon.likeCount', 'DESC')
-      .take(6)
-      .getMany();
-
-    return Object.assign({
-      data: toons,
-      statusCode: 200,
-      ok: true,
-      message: '조회 성공',
-    });
-  }
-
-  showHtmlRendering(name: string): string {
-    return name;
-  }
-
+  // 북마크 및 좋아요 추가
   async addRecommendedWithBookmark(
     userId: number,
     toonId: number,

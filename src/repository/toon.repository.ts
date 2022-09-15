@@ -93,4 +93,19 @@ export class ToonRepository extends Repository<Toon> {
       message: '추천 API 성공',
     });
   }
+
+  async getPopularList() {
+    const toons: Toon[] = await this.createQueryBuilder('toon')
+      .leftJoinAndSelect('toon.tag', 'tag')
+      .orderBy('toon.likeCount', 'DESC')
+      .take(6)
+      .getMany();
+
+    return Object.assign({
+      data: toons,
+      statusCode: 200,
+      ok: true,
+      message: '조회 성공',
+    });
+  }
 }
