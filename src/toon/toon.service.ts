@@ -60,7 +60,7 @@ export class ToonService {
   async getToonById(id: number) {
     const query = this.toonRepository.createQueryBuilder('toon');
     const toon = await query
-      .innerJoinAndSelect('toon.tag', 'tag')
+      .leftJoinAndSelect('toon.tag', 'tag')
       .where('toon.id = :id', { id: id })
       .getOne();
     if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
