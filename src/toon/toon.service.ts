@@ -17,6 +17,7 @@ import { HashTag } from '../entity/hashtag.entity';
 import { Toon } from '../entity/toon.entity';
 import { BookMarkRepository } from '../repository/bookmark.repository';
 import { RecommnededRepository } from '../repository/recommended.repository';
+import { ToonDetailDto } from './dto/toon-detail.dto';
 
 @Injectable()
 export class ToonService {
@@ -47,26 +48,44 @@ export class ToonService {
 
   // 인스타툰 전체 목록 가져오기
   async getAllToons() {
-    const query = this.toonRepository.createQueryBuilder('toon');
-    const toons = await query.leftJoinAndSelect('toon.tag', 'tag').getMany();
-    return Object.assign({
-      data: toons,
-      statusCode: 200,
-      ok: true,
-      message: '인스타툰 전체 리스트입니다.',
-    });
+    return this.toonRepository.getAllToons();
   }
 
-  async getToonById(id: number) {
-    const query = this.toonRepository.createQueryBuilder('toon');
-    const toon = await query
-      .innerJoinAndSelect('toon.tag', 'tag')
-      .where('toon.id = :id', { id: id })
-      .getOne();
-    if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
+  // 새로 등록된 인스타툰 API
+  async getRecentToons(): Promise<any> {
+    return this.toonRepository.getRecentToons();
+  }
 
+  // 랜덤 툰 API
+  async getRandomToons() {
+    return this.toonRepository.getRandomToons();
+  }
+
+  //실시간 인기툰 API
+  async getPopularList(): Promise<any> {
+    return this.toonRepository.getPopularList();
+  }
+
+  showHtmlRendering(name: string): string {
+    return name;
+  }
+
+  // 인스타툰 상세 정보 가져오기
+  async getToonById(userId: number, toonId: number) {
+    let toonDetail: ToonDetailDto;
+    const toon = await this.toonRepository.getToonById(toonId);
+    const recommend = await this.recommendedRepository.getRecommended(
+      userId,
+      toonId,
+    );
+    if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
+    if (!recommend) {
+      toonDetail = new ToonDetailDto(toon, false);
+    } else {
+      toonDetail = new ToonDetailDto(toon, true);
+    }
     return Object.assign({
-      data: [toon],
+      data: [toonDetail],
       statusCode: 200,
       ok: true,
       message: '성공',
@@ -136,36 +155,6 @@ export class ToonService {
     }
   }
 
-  // 새로 등록된 인스타툰 API
-  async getRecentToons(): Promise<any> {
-    try {
-      const toons = await this.toonRepository
-        .createQueryBuilder('toon')
-        .leftJoinAndSelect('toon.tag', 'tag')
-        .orderBy('toon.createAt', 'DESC')
-        .take(3)
-        .getMany();
-
-      if (!toons) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '등록된 툰이 없습니다.',
-          }),
-        );
-      }
-      return Object.assign({
-        data: toons,
-        statusCode: 200,
-        ok: true,
-        message: '최근 등록된 인스타툰 목록',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
-  }
-
   //인스타툰 작품 하트 수 증가 또는 감소 API
   async makeHeartCount(id: number, boolType: boolean): Promise<any> {
     Logger.verbose(id, boolType);
@@ -200,27 +189,7 @@ export class ToonService {
     }
   }
 
-  //실시간 인기툰 API
-  async getPopularList(): Promise<any> {
-    const toons: Toon[] = await this.toonRepository
-      .createQueryBuilder('toon')
-      .leftJoinAndSelect('toon.tag', 'tag')
-      .orderBy('toon.likeCount', 'DESC')
-      .take(6)
-      .getMany();
-
-    return Object.assign({
-      data: toons,
-      statusCode: 200,
-      ok: true,
-      message: '조회 성공',
-    });
-  }
-
-  showHtmlRendering(name: string): string {
-    return name;
-  }
-
+  // 북마크 및 좋아요 추가
   async addRecommendedWithBookmark(
     userId: number,
     toonId: number,
@@ -267,22 +236,5 @@ export class ToonService {
         );
       }
     }
-  }
-
-  async getRandomToons() {
-    const toons = await this.toonRepository
-      .createQueryBuilder('toon')
-      .leftJoinAndSelect('toon.tag', 'tag')
-      .getMany();
-
-    toons.sort(() => Math.random() - 0.5);
-
-    const randomToons = toons.splice(0, 4);
-    return Object.assign({
-      data: randomToons,
-      statusCode: 200,
-      ok: true,
-      message: '추천 API 성공',
-    });
   }
 }
