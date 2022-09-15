@@ -17,8 +17,6 @@ export class ToonRepository extends Repository<Toon> {
         message: '인스타툰이 등록되었습니다.',
       });
     } catch (error) {
-      // url 중복될 때 error
-      Logger.verbose('error code', error.code);
       if (error.code === '23502') {
         throw new BadRequestException('column 에 추가적인 값이 필요합니다.');
       }
@@ -41,5 +39,14 @@ export class ToonRepository extends Repository<Toon> {
       ok: true,
       message: '인스타툰 전체 리스트입니다.',
     });
+  }
+
+  async getToonById(toonId: number) {
+    const query = this.createQueryBuilder('toon');
+    const toon = await query
+      .leftJoinAndSelect('toon.tag', 'tag')
+      .where('toon.id = :id', { id: toonId })
+      .getOne();
+    return toon;
   }
 }

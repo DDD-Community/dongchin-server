@@ -52,16 +52,12 @@ export class ToonService {
   }
 
   async getToonById(userId: number, toonId: number) {
-    const query = this.toonRepository.createQueryBuilder('toon');
     let toonDetail: ToonDetailDto;
+    const toon = await this.toonRepository.getToonById(toonId);
     const recommend = await this.recommendedRepository.getRecommended(
       userId,
       toonId,
     );
-    const toon = await query
-      .leftJoinAndSelect('toon.tag', 'tag')
-      .where('toon.id = :id', { id: toonId })
-      .getOne();
     if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
     if (!recommend) {
       toonDetail = new ToonDetailDto(toon, false);
