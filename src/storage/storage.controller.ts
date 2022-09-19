@@ -22,7 +22,7 @@ import { StorageToonDto } from './dto/storage-toon.dto';
 import { ToonsListDto } from './dto/toon-list.dto';
 import { StorageService } from './storage.service';
 @ApiTags('storages')
-@Controller('storages')
+@Controller('dev/storages')
 export class StorageController {
   constructor(private storageService: StorageService) {}
   //POST

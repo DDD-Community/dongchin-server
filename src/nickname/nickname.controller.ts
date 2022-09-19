@@ -25,7 +25,7 @@ import { NickNameCredentialDto } from './dto/nickname-credential.dto';
 import { NicknameService } from './nickname.service';
 
 @ApiTags('nicknames')
-@Controller('nicknames')
+@Controller('dev/nicknames')
 export class NicknameController {
   constructor(private nicknameService: NicknameService) {}
 

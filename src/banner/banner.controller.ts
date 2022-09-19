@@ -26,7 +26,7 @@ import { BannerService } from './banner.service';
 import { BannerDto } from './dto/banner.dto';
 
 @ApiTags('banners')
-@Controller('banners')
+@Controller('dev/banners')
 export class BannerController {
   constructor(private bannerService: BannerService) {}
 

@@ -25,7 +25,7 @@ import { HashTagDto } from './dto/hashtag-create.dto';
 import { HashtagService } from './hashtag.service';
 
 @ApiTags('hashtags')
-@Controller('hashtags')
+@Controller('dev/hashtags')
 export class HashtagController {
   constructor(private hashTagService: HashtagService) {}
 
