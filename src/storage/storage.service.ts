@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NicknameRepository } from 'src/repository/nickname.repository';
-import { StorageRepository } from 'src/repository/storage.repository';
-import { ToonRepository } from 'src/repository/toon.repository';
+import { NicknameRepository } from '../repository/nickname.repository';
+import { StorageRepository } from '../repository/storage.repository';
+import { ToonRepository } from '../repository/toon.repository';
 import { ToonsListDto } from './dto/toon-list.dto';
 
 @Injectable()
@@ -50,5 +50,9 @@ export class StorageService {
 
   async deleteStorageById(storageId: number) {
     return this.storageRepository.deleteStorageById(storageId);
+  }
+
+  async updateStorageName(storageId: number, name: string) {
+    return this.storageRepository.updateStorageName(storageId, name);
   }
 }

@@ -1,6 +1,6 @@
 import { BadRequestException, Logger } from '@nestjs/common';
-import { HashTag } from 'src/entity/hashtag.entity';
-import { HashTagDto } from 'src/hashtag/dto/hashtag-create.dto';
+import { HashTag } from '../entity/hashtag.entity';
+import { HashTagDto } from '../hashtag/dto/hashtag-create.dto';
 import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(HashTag)
