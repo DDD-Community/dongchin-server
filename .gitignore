@@ -40,4 +40,4 @@ lerna-debug.log*
 .build
 .serverless
 
-views/*
+src/views/*
