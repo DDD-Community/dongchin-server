@@ -33,7 +33,7 @@ import { ToonHashTagDto } from './dto/toon-hashtag.dto';
 import { ToonService } from './toon.service';
 
 @ApiTags('toons')
-@Controller('dev/toons')
+@Controller('toons')
 export class ToonController {
   constructor(private toonService: ToonService) {}
   //GET 인스타툰 html 정적로드 하기
