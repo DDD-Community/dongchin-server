@@ -113,11 +113,11 @@ export class ToonController {
   })
   @Get('isLikeBookmark')
   addRecommendedWithBookmark(
-    @Query('userId', ParseIntPipe) userId: number,
+    @Query('nickName') nickName: string,
     @Query('toonId', ParseIntPipe) toonId: number,
     @Query('key', ParseBoolPipe) key: boolean,
   ) {
-    return this.toonService.addRecommendedWithBookmark(userId, toonId, key);
+    return this.toonService.addRecommendedWithBookmark(nickName, toonId, key);
   }
   //GET 인툰 목록
   @ApiOperation({ summary: '인스타툰 전체 목록 API' })
@@ -198,12 +198,12 @@ export class ToonController {
       }),
     },
   })
-  @Get('/:userId/:toonId')
+  @Get('/:nickName/:toonId')
   getToonById(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('nickName') nickName: string,
     @Param('toonId', ParseIntPipe) toonId: number,
   ) {
-    return this.toonService.getToonById(userId, toonId);
+    return this.toonService.getToonById(nickName, toonId);
   }
 
   //PATCH 인스타툰 작품마다 좋아요 누르기

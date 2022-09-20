@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsNumber, IsString } from 'class-validator';
-import { ToonDto } from './toon-create.dto';
 
 export class ToonDetailDto {
   constructor(toon: any, isRecommended: boolean) {

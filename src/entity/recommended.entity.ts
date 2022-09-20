@@ -8,8 +8,8 @@ export class Recommended {
   public id: number;
 
   @Column()
-  @ApiProperty({ description: '유저 id', default: 3 })
-  public userId: number;
+  @ApiProperty({ description: '닉네임', default: 'taeyong' })
+  public nickName: string;
 
   @Column()
   @ApiProperty({ description: '인스타툰 id', default: 9 })
