@@ -117,7 +117,7 @@ export class HashtagService {
     try {
       const tags = await this.hashTagRepository
         .createQueryBuilder('hashtag')
-        .where('hashtag.category = :category', { category: '주제' })
+        .where('hashtag.category = :category', { category: 'subject' })
         .getMany();
 
       if (!tags) {
@@ -145,7 +145,7 @@ export class HashtagService {
     try {
       const tags = await this.hashTagRepository
         .createQueryBuilder('hashtag')
-        .where('hashtag.category = :category', { category: '그림체' })
+        .where('hashtag.category = :category', { category: 'drawing' })
         .getMany();
 
       if (!tags) {
