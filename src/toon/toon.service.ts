@@ -175,7 +175,8 @@ export class ToonService {
         return Object.assign({
           statusCode: 200,
           message: '좋아요 및 북마크 추가',
-          success: true,
+          success: 'true',
+          ok: true,
         });
       } else {
         throw new BadRequestException(
@@ -194,7 +195,8 @@ export class ToonService {
         return Object.assign({
           statusCode: 200,
           message: '좋아요 및 북마크 취소',
-          success: true,
+          success: 'true',
+          ok: false,
         });
       } else {
         throw new BadRequestException(
