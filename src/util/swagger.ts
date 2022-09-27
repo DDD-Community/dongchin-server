@@ -11,8 +11,8 @@ export function SwaggerSetup(app: INestApplication): void {
     .setTitle('Dongchin API Docs')
     .setDescription('Linco API 문서')
     .setVersion('1.0.0')
-    .addServer('/dev')
     .addServer('')
+    .addServer('/dev')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
