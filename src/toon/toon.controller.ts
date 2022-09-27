@@ -187,19 +187,6 @@ export class ToonController {
     return this.toonService.getToonById(userId, toonId);
   }
 
-  //PATCH 인스타툰 작품마다 좋아요 누르기
-  @ApiOperation({
-    summary:
-      '인스타툰 작품에 좋아요/하트 API count수 증가: key=true 감소: key=false',
-  })
-  @Patch('/:id')
-  makeHeartCount(
-    @Param('id', ParseIntPipe) id: number,
-    @Query('key', ParseBoolPipe) boolType: boolean,
-  ): Promise<any> {
-    return this.toonService.makeHeartCount(id, boolType);
-  }
-
   //POST 인툰 생성
   @ApiOperation({ summary: '인스타툰 링크생성' })
   @ApiBody({ type: ToonDto })
