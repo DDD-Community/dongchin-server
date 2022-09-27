@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ToonRepository } from '../repository/toon.repository';
 import { BannerRepository } from '../repository/banner.repository';
 import { BannerDto } from './dto/banner.dto';
+import { RecommnededRepository } from 'src/repository/recommended.repository';
+import { ToonDetailDto } from 'src/toon/dto/toon-detail.dto';
 
 @Injectable()
 export class BannerService {
@@ -12,6 +14,9 @@ export class BannerService {
 
     @InjectRepository(ToonRepository)
     private toonRepository: ToonRepository,
+
+    @InjectRepository(RecommnededRepository)
+    private recommendedRepository: RecommnededRepository,
   ) {}
 
   async createBanner(bannerDto: BannerDto) {
@@ -43,18 +48,26 @@ export class BannerService {
     }
   }
 
-  async getAllToonsByRandom() {
+  async getAllToonsByRandom(nickName: string) {
     // 랜덤 배너 가져오기
+    let toonDetail: ToonDetailDto;
     const toonQuery = this.toonRepository
       .createQueryBuilder('toon')
       .leftJoinAndSelect('toon.tag', 'tag');
-
     const toons = await toonQuery.getMany();
     toons.sort(() => Math.random() - 0.5);
-
-    const randomToons = toons.splice(0, 1);
+    const randomToon = toons.splice(0, 1)[0];
+    const recommend = await this.recommendedRepository.getRecommended(
+      nickName,
+      randomToon.id,
+    );
+    if (!recommend) {
+      toonDetail = new ToonDetailDto(randomToon, false);
+    } else {
+      toonDetail = new ToonDetailDto(randomToon, true);
+    }
     return Object.assign({
-      data: randomToons,
+      data: [toonDetail],
       statusCode: 200,
       ok: true,
       message: '랜덤으로 툰 가져오기 성공',
