@@ -36,7 +36,8 @@ lerna-debug.log*
 
 #dotdenv
 .env
-
+.development.env
+.production.env
 .build
 .serverless
 
