@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -71,11 +70,11 @@ export class ToonService {
   }
 
   // 인스타툰 상세 정보 가져오기
-  async getToonById(userId: number, toonId: number) {
+  async getToonById(nickName: string, toonId: number) {
     let toonDetail: ToonDetailDto;
     const toon = await this.toonRepository.getToonById(toonId);
     const recommend = await this.recommendedRepository.getRecommended(
-      userId,
+      nickName,
       toonId,
     );
     if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
@@ -157,17 +156,17 @@ export class ToonService {
 
   // 북마크 및 좋아요 추가
   async addRecommendedWithBookmark(
-    userId: number,
+    nickName: string,
     toonId: number,
     key: boolean,
   ) {
     if (key) {
       const recommendResult = await this.recommendedRepository.addRecommended(
-        userId,
+        nickName,
         toonId,
       );
       const bookmarkResult = await this.bookmarkRepository.addBookMark(
-        userId,
+        nickName,
         toonId,
       );
 
@@ -185,9 +184,9 @@ export class ToonService {
       }
     } else {
       const recommendResult =
-        await this.recommendedRepository.deleteRecommended(userId, toonId);
+        await this.recommendedRepository.deleteRecommended(nickName, toonId);
       const bookmarkResult = await this.bookmarkRepository.deleteBookMark(
-        userId,
+        nickName,
         toonId,
       );
 

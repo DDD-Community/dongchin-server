@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  ParseArrayPipe,
   Post,
   Query,
   UsePipes,
@@ -21,6 +22,7 @@ import {
   responseTagDto,
   responseTagListDto,
 } from 'src/api/globalDTO';
+import { ToonFindAllOptions } from 'src/repository/toon.repository';
 import { HashTagDto } from './dto/hashtag-create.dto';
 import { HashtagService } from './hashtag.service';
 
@@ -78,14 +80,22 @@ export class HashtagController {
   }
 
   /* 검색 API -> 검색 키워드에 따른 인스타툰 list 제공 + 검색 count + 1*/
-  @ApiOperation({ summary: '태그 검색 API: 키워드에 따른 인툰 list' })
+  @ApiOperation({ summary: '검색 API' })
   @ApiNotFoundResponse({
-    description: '검색 키워드에 따른 인툰리스트 가져오기 실패',
+    description: '검색에 따른 인툰리스트 가져오기 실패',
     type: responseFailDto,
   })
   @Get()
-  getSearchKeyWord(@Query('tagName') tagName: string): Promise<any> {
-    return this.hashTagService.getSearchKeyWord(tagName);
+  findAll(
+    @Query('input') input: string,
+    @Query('tagIds', new ParseArrayPipe({ items: Number, separator: ',' }))
+    tagIds: number[],
+  ) {
+    const search: ToonFindAllOptions = {
+      input: input,
+      tagIds: tagIds,
+    };
+    return this.hashTagService.findAll(search);
   }
 
   /* 주제 키워드 list를 제공하는 API */

@@ -8,8 +8,17 @@ import { Storage } from '../entity/storage.entity';
 import { Toon } from '../entity/toon.entity';
 import { ToonToBanner } from '../entity/toonToBanner.entity';
 import * as dotenv from 'dotenv';
+import path from 'path';
 //클라우드환경으로 배포
-dotenv.config();
+dotenv.config({
+  path: path.resolve(
+    process.env.NODE_ENV === 'production'
+      ? '.production.env'
+      : process.env.NODE_ENV === 'stage'
+      ? '.stage.env'
+      : '.development.env',
+  ),
+});
 export const typeORMConfig: TypeOrmModuleOptions = {
   type: 'postgres',
   host: process.env.DB_HOST,
