@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HashTagRepository } from '../repository/hashtag.repository';
-import { ToonRepository } from '../repository/toon.repository';
+import {
+  ToonFindAllOptions,
+  ToonRepository,
+} from '../repository/toon.repository';
 import { HashTagDto } from './dto/hashtag-create.dto';
 
 @Injectable()
@@ -70,8 +73,69 @@ export class HashtagService {
     }
   }
 
-  async getSearchKeyWord(tagName: string): Promise<any> {
+  async findAll(search: ToonFindAllOptions) {
+    return this.toonRepository.findAll(search);
+  }
+
+  async getTopicKeyWord(): Promise<any> {
     try {
+      const tags = await this.hashTagRepository
+        .createQueryBuilder('hashtag')
+        .where('hashtag.category = :category', { category: 'subject' })
+        .getMany();
+
+      if (!tags) {
+        throw new NotFoundException(
+          Object.assign({
+            statusCode: 404,
+            ok: false,
+            message: '주제 키워드가 존재하지 않습니다.',
+          }),
+        );
+      }
+
+      return Object.assign({
+        data: tags,
+        statusCode: 200,
+        ok: true,
+        message: '주제 키워드 list',
+      });
+    } catch (NotFoundException) {
+      throw NotFoundException;
+    }
+  }
+
+  async getDrawStyleKeyWord(): Promise<any> {
+    try {
+      const tags = await this.hashTagRepository
+        .createQueryBuilder('hashtag')
+        .where('hashtag.category = :category', { category: 'drawing' })
+        .getMany();
+
+      if (!tags) {
+        throw new NotFoundException(
+          Object.assign({
+            statusCode: 404,
+            ok: false,
+            message: '그림체 키워드가 존재하지 않습니다.',
+          }),
+        );
+      }
+
+      return Object.assign({
+        data: tags,
+        statusCode: 200,
+        ok: true,
+        message: '그림체 키워드 list',
+      });
+    } catch (NotFoundException) {
+      throw NotFoundException;
+    }
+  }
+}
+
+/**
+ * try {
       const hashtag = await this.hashTagRepository
         .createQueryBuilder('hashtag')
         .where('hashtag.title = :title', { title: tagName })
@@ -111,61 +175,4 @@ export class HashtagService {
     } catch (NotFoundException) {
       throw NotFoundException;
     }
-  }
-
-  async getTopicKeyWord(): Promise<any> {
-    try {
-      const tags = await this.hashTagRepository
-        .createQueryBuilder('hashtag')
-        .where('hashtag.category = :category', { category: '주제' })
-        .getMany();
-
-      if (!tags) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '주제 키워드가 존재하지 않습니다.',
-          }),
-        );
-      }
-
-      return Object.assign({
-        data: tags,
-        statusCode: 200,
-        ok: true,
-        message: '주제 키워드 list',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
-  }
-
-  async getDrawStyleKeyWord(): Promise<any> {
-    try {
-      const tags = await this.hashTagRepository
-        .createQueryBuilder('hashtag')
-        .where('hashtag.category = :category', { category: '그림체' })
-        .getMany();
-
-      if (!tags) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '그림체 키워드가 존재하지 않습니다.',
-          }),
-        );
-      }
-
-      return Object.assign({
-        data: tags,
-        statusCode: 200,
-        ok: true,
-        message: '그림체 키워드 list',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
-  }
-}
+ */

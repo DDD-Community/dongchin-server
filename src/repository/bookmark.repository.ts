@@ -3,15 +3,15 @@ import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(BookMark)
 export class BookMarkRepository extends Repository<BookMark> {
-  async addBookMark(userId: number, toonId: number) {
+  async addBookMark(nickName: string, toonId: number) {
     const result = await this.createQueryBuilder('bookmark')
-      .where('bookmark.userId = :userId', { userId: userId })
+      .where('bookmark.nickName = :nickName', { nickName: nickName })
       .andWhere('bookmark.toonId = :toonId', { toonId: toonId })
       .getOne();
 
     if (!result) {
       // data가 없다면
-      const data = this.create({ userId: userId, toonId: toonId });
+      const data = this.create({ nickName: nickName, toonId: toonId });
       await this.save(data);
       return true;
     } else {
@@ -19,9 +19,9 @@ export class BookMarkRepository extends Repository<BookMark> {
     }
   }
 
-  async deleteBookMark(userId: number, toonId: number) {
+  async deleteBookMark(nickName: string, toonId: number) {
     const result = await this.createQueryBuilder('bookmark')
-      .where('bookmark.userId = :userId', { userId: userId })
+      .where('bookmark.nickName = :nickName', { nickName: nickName })
       .andWhere('bookmark.toonId = :toonId', { toonId: toonId })
       .getOne();
 

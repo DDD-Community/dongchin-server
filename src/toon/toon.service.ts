@@ -71,11 +71,11 @@ export class ToonService {
   }
 
   // 인스타툰 상세 정보 가져오기
-  async getToonById(userId: number, toonId: number) {
+  async getToonById(nickName: string, toonId: number) {
     let toonDetail: ToonDetailDto;
     const toon = await this.toonRepository.getToonById(toonId);
     const recommend = await this.recommendedRepository.getRecommended(
-      userId,
+      nickName,
       toonId,
     );
     if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
@@ -155,53 +155,19 @@ export class ToonService {
     }
   }
 
-  //인스타툰 작품 하트 수 증가 또는 감소 API
-  async makeHeartCount(id: number, boolType: boolean): Promise<any> {
-    Logger.verbose(id, boolType);
-    try {
-      const toon = await this.toonRepository.findOne(id);
-      if (!toon) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '등록된 툰이 없습니다.',
-          }),
-        );
-      } else {
-        if (boolType) {
-          // boolType is true 하트 수 증가
-          toon.likeCount += 1;
-        } else {
-          if (toon.likeCount >= 1) {
-            toon.likeCount -= 1;
-          }
-        }
-        await this.toonRepository.save(toon);
-      }
-      return Object.assign({
-        statusCode: 200,
-        ok: true,
-        message: '성공적으로 작업하였습니다.',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
-  }
-
   // 북마크 및 좋아요 추가
   async addRecommendedWithBookmark(
-    userId: number,
+    nickName: string,
     toonId: number,
     key: boolean,
   ) {
     if (key) {
       const recommendResult = await this.recommendedRepository.addRecommended(
-        userId,
+        nickName,
         toonId,
       );
       const bookmarkResult = await this.bookmarkRepository.addBookMark(
-        userId,
+        nickName,
         toonId,
       );
 
@@ -209,7 +175,8 @@ export class ToonService {
         return Object.assign({
           statusCode: 200,
           message: '좋아요 및 북마크 추가',
-          success: true,
+          success: 'true',
+          ok: true,
         });
       } else {
         throw new BadRequestException(
@@ -218,9 +185,9 @@ export class ToonService {
       }
     } else {
       const recommendResult =
-        await this.recommendedRepository.deleteRecommended(userId, toonId);
+        await this.recommendedRepository.deleteRecommended(nickName, toonId);
       const bookmarkResult = await this.bookmarkRepository.deleteBookMark(
-        userId,
+        nickName,
         toonId,
       );
 
@@ -228,7 +195,8 @@ export class ToonService {
         return Object.assign({
           statusCode: 200,
           message: '좋아요 및 북마크 취소',
-          success: true,
+          success: 'true',
+          ok: false,
         });
       } else {
         throw new BadRequestException(

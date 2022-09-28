@@ -3,11 +3,11 @@ import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(Recommended)
 export class RecommnededRepository extends Repository<Recommended> {
-  async addRecommended(userId: number, toonId: number) {
-    const result = await this.getRecommended(userId, toonId);
+  async addRecommended(nickName: string, toonId: number) {
+    const result = await this.getRecommended(nickName, toonId);
     if (!result) {
       // data가 없다면
-      const data = this.create({ userId: userId, toonId: toonId });
+      const data = this.create({ nickName: nickName, toonId: toonId });
       await this.save(data);
       return true;
     } else {
@@ -15,8 +15,8 @@ export class RecommnededRepository extends Repository<Recommended> {
     }
   }
 
-  async deleteRecommended(userId: number, toonId: number) {
-    const result = await this.getRecommended(userId, toonId);
+  async deleteRecommended(nickName: string, toonId: number) {
+    const result = await this.getRecommended(nickName, toonId);
     if (!result) {
       return false;
     } else {
@@ -25,9 +25,9 @@ export class RecommnededRepository extends Repository<Recommended> {
     }
   }
 
-  async getRecommended(userId: number, toonId: number) {
+  async getRecommended(nickName: string, toonId: number) {
     const result = await this.createQueryBuilder('recommended')
-      .where('recommended.userId = :userId', { userId: userId })
+      .where('recommended.nickName = :nickName', { nickName: nickName })
       .andWhere('recommended.toonId = :toonId', { toonId: toonId })
       .getOne();
 
