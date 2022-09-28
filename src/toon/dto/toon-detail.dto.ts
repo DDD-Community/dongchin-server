@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
-import { ToonDto } from './toon-create.dto';
+import { IsArray, IsBoolean, IsNumber, IsString } from 'class-validator';
 
 export class ToonDetailDto {
-  constructor(toon: ToonDto, isRecommended: boolean) {
+  constructor(toon: any, isRecommended: boolean) {
+    this.id = toon.id;
     this.authorName = toon.authorName;
     this.description = toon.description;
     this.htmlUrl = toon.htmlUrl;
@@ -11,8 +11,14 @@ export class ToonDetailDto {
     this.instagramId = toon.instagramId;
     this.instagramUrl = toon.instagramUrl;
     this.likeCount = toon.likeCount;
+    this.createAt = toon.createAt;
+    this.tag = toon.tag;
     this.isRecommended = isRecommended;
   }
+  @ApiProperty()
+  @IsNumber()
+  id: number;
+
   @ApiProperty()
   @IsString()
   authorName: string; //작가 이름
@@ -40,6 +46,14 @@ export class ToonDetailDto {
   @ApiProperty()
   @IsNumber()
   likeCount: number; // 좋아요 수
+
+  @ApiProperty()
+  @IsNumber()
+  createAt: string;
+
+  @ApiProperty()
+  @IsArray()
+  tag: [];
 
   @ApiProperty()
   @IsBoolean()

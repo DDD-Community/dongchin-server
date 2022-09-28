@@ -40,5 +40,3 @@ lerna-debug.log*
 .production.env
 .build
 .serverless
-
-src/views/*

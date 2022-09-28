@@ -90,9 +90,9 @@ export class BannerController {
       },
     },
   })
-  @Get('/random')
-  getAllToonsByRandom() {
-    return this.bannerService.getAllToonsByRandom();
+  @Get('/random/:nickName')
+  getAllToonsByRandom(@Param('nickName') nickName: string) {
+    return this.bannerService.getAllToonsByRandom(nickName);
   }
 
   @ApiOperation({ summary: 'Bannder Id에 따른 인스타툰 목록 가져오기' })

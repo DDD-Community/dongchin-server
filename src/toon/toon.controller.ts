@@ -110,6 +110,20 @@ export class ToonController {
         message: '좋아요 및 북마크 추가',
         success: true,
         ok: true,
+<<<<<<< HEAD
+      },
+    },
+  })
+  @ApiOkResponse({
+    description: '성공',
+    schema: {
+      example: {
+        statusCode: 200,
+        message: '좋아요 및 북마크 취소',
+        success: true,
+        ok: false,
+=======
+>>>>>>> 4a200a8d71aef99eb71c8615bcc6a54bda67c4d7
       },
     },
   })
@@ -124,13 +138,13 @@ export class ToonController {
       },
     },
   })
-  @Get('isLikeBookmark')
+  @Patch('isLikeBookmark')
   addRecommendedWithBookmark(
-    @Query('userId', ParseIntPipe) userId: number,
+    @Query('nickName') nickName: string,
     @Query('toonId', ParseIntPipe) toonId: number,
     @Query('key', ParseBoolPipe) key: boolean,
   ) {
-    return this.toonService.addRecommendedWithBookmark(userId, toonId, key);
+    return this.toonService.addRecommendedWithBookmark(nickName, toonId, key);
   }
 
   //GET 인툰 목록
@@ -166,25 +180,44 @@ export class ToonController {
       example: Object.assign({
         data: [
           {
-            id: 10,
+            id: 1,
             authorName: '현이',
-            instagramId: 'hyuny_beeny',
             description: '하고 싶은게 많은 시각디자인과 미대생 현이의 일상',
+            htmlUrl:
+              'https://kb2x4imym4.execute-api.ap-northeast-2.amazonaws.com/dev/toons/page?name=hyuny_beeny',
             imgUrl:
               'https://user-images.githubusercontent.com/52276038/177171189-c8f546fd-4865-4480-b438-bf026f6e4e1c.png',
-            instagramUrl: 'https://instagram.com/hyuny_bee',
-            htmlUrl:
-              'http://my-app-elb-251560380.ap-northeast-2.elb.amazonaws.com/toons/page?name=hyuny_beeny',
+            instagramId: 'hyuny_beeny',
+            instagramUrl: 'https://www.instagram.com/hyuny_beeny/',
             likeCount: 0,
-            createAt: '2022-07-08T04:02:00.597Z',
+            createAt: '2022-07-07T23:39:35.938Z',
             tag: [
               {
-                id: 5,
-                title: '드로잉',
-                count: 2,
+                id: 7,
+                title: '대학생',
+                count: 0,
+                category: 'subject',
+              },
+              {
+                id: 10,
+                title: '디자이너',
+                count: 0,
+                category: 'subject',
+              },
+              {
+                id: 15,
+                title: '귀여운',
+                count: 0,
                 category: 'drawing',
               },
+              {
+                id: 27,
+                title: '열정적인',
+                count: 0,
+                category: 'subject',
+              },
             ],
+            isRecommended: false,
           },
         ],
         statusCode: 200,
@@ -193,12 +226,16 @@ export class ToonController {
       }),
     },
   })
-  @Get('/:userId/:toonId')
+  @Get('/:nickName/:toonId')
   getToonById(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('nickName') nickName: string,
     @Param('toonId', ParseIntPipe) toonId: number,
   ) {
+<<<<<<< HEAD
     return this.toonService.getToonById(userId, toonId);
+=======
+    return this.toonService.getToonById(nickName, toonId);
+>>>>>>> 4a200a8d71aef99eb71c8615bcc6a54bda67c4d7
   }
 
   //POST 인툰 생성
