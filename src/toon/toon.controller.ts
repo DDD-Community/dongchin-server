@@ -110,7 +110,6 @@ export class ToonController {
         message: '좋아요 및 북마크 추가',
         success: true,
         ok: true,
-<<<<<<< HEAD
       },
     },
   })
@@ -122,8 +121,6 @@ export class ToonController {
         message: '좋아요 및 북마크 취소',
         success: true,
         ok: false,
-=======
->>>>>>> 4a200a8d71aef99eb71c8615bcc6a54bda67c4d7
       },
     },
   })
@@ -231,11 +228,7 @@ export class ToonController {
     @Param('nickName') nickName: string,
     @Param('toonId', ParseIntPipe) toonId: number,
   ) {
-<<<<<<< HEAD
-    return this.toonService.getToonById(userId, toonId);
-=======
     return this.toonService.getToonById(nickName, toonId);
->>>>>>> 4a200a8d71aef99eb71c8615bcc6a54bda67c4d7
   }
 
   //POST 인툰 생성
