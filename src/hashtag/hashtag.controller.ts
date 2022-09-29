@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   ParseArrayPipe,
   Post,
@@ -81,15 +82,25 @@ export class HashtagController {
 
   /* 검색 API -> 검색 키워드에 따른 인스타툰 list 제공 + 검색 count + 1*/
   @ApiOperation({ summary: '검색 API' })
-  @ApiNotFoundResponse({
-    description: '검색에 따른 인툰리스트 가져오기 실패',
-    type: responseFailDto,
+  @ApiOkResponse({
+    description: '검색에 따른 인툰리스트 가져오기 성공',
+    schema: {
+      example: {
+        data: [],
+        statusCode: 200,
+        ok: true,
+      },
+    },
   })
   @Get()
   findAll(
-    @Query('input') input: string,
-    @Query('tagIds', new ParseArrayPipe({ items: Number, separator: ',' }))
-    tagIds: number[],
+    @Query('input', new DefaultValuePipe(' ')) input: string,
+    @Query(
+      'tagIds',
+      new DefaultValuePipe([]),
+      new ParseArrayPipe({ items: Number, separator: ',' }),
+    )
+    tagIds?: number[],
   ) {
     const search: ToonFindAllOptions = {
       input: input,

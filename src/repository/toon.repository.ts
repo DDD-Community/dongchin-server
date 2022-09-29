@@ -1,5 +1,5 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { EntityRepository, Repository } from 'typeorm';
+import { Brackets, EntityRepository, Repository } from 'typeorm';
 import { ToonDto } from '../toon/dto/toon-create.dto';
 import { Toon } from '../entity/toon.entity';
 
@@ -115,15 +115,91 @@ export class ToonRepository extends Repository<Toon> {
 
   async findAll(options: ToonFindAllOptions = {}) {
     const { input, tagIds } = options;
-    console.log(input);
-    console.log(tagIds);
-    const qb = this.createQueryBuilder('toon').leftJoinAndSelect(
+    const length = tagIds.length;
+    const queryBuilder = this.createQueryBuilder('toon').leftJoinAndSelect(
       'toon.tag',
       'tag',
     );
-    const tag = [1];
-    qb.andWhere('tag.id IN (:...tag)', { tag });
-    const [items, total] = await qb.getManyAndCount();
-    return { items, total };
+    if (input === ' ' && tagIds.length === 0) {
+      return {
+        data: [],
+        statusCode: 200,
+        ok: true,
+      };
+    } else {
+      if (length > 0) {
+        const result = await queryBuilder.getMany();
+        const filters = result.filter((toon) => {
+          let cnt = 0;
+          toon.tag.forEach((tag) => {
+            tagIds.forEach((id) => {
+              if (id === tag.id) {
+                cnt++;
+              }
+            });
+          });
+          if (cnt == length) {
+            return true;
+          }
+        });
+        if (input === ' ') {
+          return {
+            data: [filters],
+            statusCode: 200,
+            ok: true,
+          };
+        } else {
+          return this.filterTopic(filters, input);
+        }
+      } else {
+        const result = await queryBuilder.getMany();
+        return this.filterTopic(result, input);
+      }
+    }
+  }
+  filterTopic(toons: any, input: any) {
+    const result = [];
+    for (let i = 0; i < toons.length; i++) {
+      for (let j = 0; j < toons[i].tag.length; j++) {
+        if (
+          toons[i].tag[j].category == 'subject' &&
+          toons[i].tag[j].title.includes(input)
+        ) {
+          result.push(toons[i]);
+        }
+      }
+    }
+    return { data: [result], statusCode: 200, ok: true };
   }
 }
+
+// console.log(await queryBuilder.getMany());
+// if (input === ' ' && tagIds.length === 0) {
+//   return {
+//     data: [],
+//     total: 0,
+//   };
+// } else if (input === ' ' && tagIds.length !== 0) {
+//   queryBuilder.where('1 = 1').andWhere(
+//     new Brackets((qb) => {
+//       qb.where('tag.id = :id', { id: tagIds[0] });
+//       for (let i = 1; i < tagIds.length; i++) {
+//         qb.andWhere('tag.id = :id', { id: tagIds[i] });
+//       }
+//     }),
+//   );
+// } else if (input !== ' ' && tagIds.length === 0) {
+//   queryBuilder.where('tag.title like :input', { input: `%${input}` });
+// } else {
+//   queryBuilder.where('1 = 1').andWhere(
+//     new Brackets((qb) => {
+//       qb.where('tag.id = :id', { id: tagIds[0] });
+//       for (let i = 1; i < tagIds.length; i++) {
+//         qb.andWhere('tag.id = :id', { id: tagIds[i] });
+//       }
+//     }),
+//   );
+//   queryBuilder.andWhere('tag.title like :input', { input: `%${input}` });
+// }
+// const [items, total] = await queryBuilder.getManyAndCount();
+// return { items, total };
