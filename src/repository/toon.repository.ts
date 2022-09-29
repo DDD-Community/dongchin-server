@@ -1,14 +1,22 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Brackets, EntityRepository, Repository } from 'typeorm';
+import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
+import { EntityRepository, Repository } from 'typeorm';
 import { ToonDto } from '../toon/dto/toon-create.dto';
 import { Toon } from '../entity/toon.entity';
+import { CommonResponseDto } from 'src/api/common-response.dto';
+import { RecommnededRepository } from './recommended.repository';
+import {
+  GetToonDetailConfig,
+  RecommendConfig,
+  ToonConfig,
+  ToonDetailConfig,
+  ToonFindAllOptions,
+} from 'src/toon/config/type.config';
+import { Nickname } from 'src/entity/nickname.entity';
 
-export interface ToonFindAllOptions {
-  input?: string;
-  tagIds?: number[];
-}
 @EntityRepository(Toon)
 export class ToonRepository extends Repository<Toon> {
+  private response: CommonResponseDto;
+
   async createToon(toonDto: ToonDto): Promise<any> {
     const instaToon = this.create(toonDto);
 
@@ -45,116 +53,182 @@ export class ToonRepository extends Repository<Toon> {
     });
   }
 
-  async getToonById(toonId: number) {
+  async getToonById(
+    getToonDetail: GetToonDetailConfig,
+  ): Promise<CommonResponseDto> {
+    const {
+      nickName,
+      toonId,
+      recommendedRepository,
+      nicknameRepository,
+      storageRepository,
+    } = getToonDetail;
     const query = this.createQueryBuilder('toon');
-    const toon = await query
+    const toon: ToonConfig = await query
       .leftJoinAndSelect('toon.tag', 'tag')
       .where('toon.id = :id', { id: toonId })
       .getOne();
-    return toon;
-  }
+    if (!toon) {
+      throw new NotFoundException('존재하지 않는 id입니다.');
+    } else {
+      const recommend = await recommendedRepository.getRecommended(
+        nickName,
+        toonId,
+      );
+      const nickname: Nickname = await storageRepository.getStorageBynickname(
+        nicknameRepository,
+        nickName,
+      );
+      const storageIds: number[] = this.findStorageIds(nickname, toonId);
 
-  async getRecentToons() {
-    try {
-      const toons = await this.createQueryBuilder('toon')
-        .leftJoinAndSelect('toon.tag', 'tag')
-        .orderBy('toon.createAt', 'DESC')
-        .take(3)
-        .getMany();
-
-      if (!toons) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '등록된 툰이 없습니다.',
-          }),
-        );
+      const toonDetail: ToonDetailConfig = {
+        id: toon.id,
+        authorName: toon.authorName,
+        instagramId: toon.instagramId,
+        description: toon.description,
+        imgUrl: toon.imgUrl,
+        instagramUrl: toon.instagramUrl,
+        htmlUrl: toon.htmlUrl,
+        likeCount: toon.likeCount,
+        createAt: toon.createAt,
+        tag: toon.tag,
+        isRecommended: true,
+        storageIds: storageIds,
+      };
+      if (recommend) {
+        toonDetail.isRecommended = true;
+      } else {
+        toonDetail.isRecommended = false;
       }
-      return Object.assign({
-        data: toons,
-        statusCode: 200,
-        ok: true,
-        message: '최근 등록된 인스타툰 목록',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
+      this.response = new CommonResponseDto(200, true, '성공', [toonDetail]);
+      return this.response;
     }
   }
 
-  async getRandomToons() {
+  async getRecentToons(): Promise<CommonResponseDto> {
+    const toons = await this.createQueryBuilder('toon')
+      .leftJoinAndSelect('toon.tag', 'tag')
+      .orderBy('toon.createAt', 'DESC')
+      .take(2)
+      .getMany();
+
+    if (!toons) {
+      this.response = new CommonResponseDto(
+        404,
+        false,
+        '등록된 툰이 없습니다.',
+      );
+    } else {
+      this.response = new CommonResponseDto(
+        200,
+        true,
+        '최근 등록된 인스타툰 목록',
+        toons,
+      );
+    }
+    return this.response;
+  }
+
+  async getRandomToons(): Promise<CommonResponseDto> {
     const toons = await this.createQueryBuilder('toon')
       .leftJoinAndSelect('toon.tag', 'tag')
       .getMany();
-
-    toons.sort(() => Math.random() - 0.5);
-
-    const randomToons = toons.splice(0, 4);
-    return Object.assign({
-      data: randomToons,
-      statusCode: 200,
-      ok: true,
-      message: '추천 API 성공',
-    });
+    const randomToons = toons.sort(() => Math.random() - 0.5).splice(0, 4); // 랜덤 정렬 후 4개 자르기
+    this.response = new CommonResponseDto(
+      200,
+      true,
+      '추천 API 성공',
+      randomToons,
+    );
+    return this.response;
   }
 
-  async getPopularList() {
-    const toons: Toon[] = await this.createQueryBuilder('toon')
+  async getPopularList(): Promise<CommonResponseDto> {
+    const toons: ToonConfig[] = await this.createQueryBuilder('toon')
       .leftJoinAndSelect('toon.tag', 'tag')
       .orderBy('toon.likeCount', 'DESC')
       .take(6)
       .getMany();
-
-    return Object.assign({
-      data: toons,
-      statusCode: 200,
-      ok: true,
-      message: '조회 성공',
-    });
+    this.response = new CommonResponseDto(200, true, '조회 성공', toons);
+    return this.response;
   }
 
-  async findAll(options: ToonFindAllOptions = {}) {
+  async patchRecommended(
+    recommendConfig: RecommendConfig,
+    recommendedRepository: RecommnededRepository,
+  ) {
+    const { nickName, toonId, key } = recommendConfig;
+    let result: boolean;
+    try {
+      if (key) {
+        result = await recommendedRepository.addRecommended(nickName, toonId);
+      } else {
+        result = await recommendedRepository.deleteRecommended(
+          nickName,
+          toonId,
+        );
+      }
+      if (result) {
+        this.response = new CommonResponseDto(
+          200,
+          true,
+          '좋아요 및 북마크 추가',
+        );
+      } else {
+        this.response = new CommonResponseDto(
+          200,
+          false,
+          '좋아요 및 북마크 취소',
+        );
+      }
+    } catch (error) {
+      Logger.verbose('error', error);
+    }
+    return this.response;
+  }
+
+  async findAll(options: ToonFindAllOptions = {}): Promise<CommonResponseDto> {
     const { input, tagIds } = options;
     const length = tagIds.length;
     const queryBuilder = this.createQueryBuilder('toon').leftJoinAndSelect(
       'toon.tag',
       'tag',
     );
-    if (input === ' ' && tagIds.length === 0) {
-      return {
-        data: [],
-        statusCode: 200,
-        ok: true,
-      };
-    } else {
-      if (length > 0) {
-        const result = await queryBuilder.getMany();
-        const filters = result.filter((toon) => {
-          let cnt = 0;
-          toon.tag.forEach((tag) => {
-            tagIds.forEach((id) => {
-              if (id === tag.id) {
-                cnt++;
-              }
-            });
-          });
-          if (cnt == length) {
-            return true;
-          }
-        });
-        if (input === ' ') {
-          return {
-            data: [filters],
-            statusCode: 200,
-            ok: true,
-          };
-        } else {
-          return this.filterTopic(filters, input);
-        }
+    try {
+      if (input === ' ' && length === 0) {
+        this.response = new CommonResponseDto(200, true, '조회 성공');
       } else {
-        const result = await queryBuilder.getMany();
-        return this.filterTopic(result, input);
+        if (length > 0) {
+          const result = await queryBuilder.getMany();
+          const filters = result.filter((toon) => {
+            let isExist = false;
+            tagIds.forEach((id) => {
+              toon.tag.forEach((tag) => {
+                Logger.verbose('id 및 toon의 tag id', id, tag.id);
+                if (id === tag.id) isExist = true;
+              });
+            });
+            if (isExist) return true;
+          });
+          Logger.verbose('검색 태그 길이 및 필터링된 인스타툰', filters);
+          if (input === ' ') {
+            this.response = new CommonResponseDto(
+              200,
+              true,
+              '검색 성공',
+              filters,
+            );
+          } else {
+            this.response = this.filterTopic(filters, input);
+          }
+        } else {
+          const result = await queryBuilder.getMany();
+          this.response = this.filterTopic(result, input);
+        }
+        return this.response;
       }
+    } catch (error) {
+      Logger.verbose('검색 에러', error);
     }
   }
   filterTopic(toons: any, input: any) {
@@ -169,37 +243,20 @@ export class ToonRepository extends Repository<Toon> {
         }
       }
     }
-    return { data: [result], statusCode: 200, ok: true };
+    return new CommonResponseDto(200, true, '검색 성공', result);
+  }
+  findStorageIds(nickname: Nickname, toonId: number) {
+    const storageIds: number[] = [];
+
+    for (let i = 0; i < Object.keys(nickname.storages).length; i++) {
+      const length = Object.keys(nickname.storages[i].toons).length;
+      for (let j = 0; j < length; j++) {
+        if (nickname.storages[i].toons[j].id === toonId) {
+          const storageId = nickname.storages[i].storageId;
+          storageIds.push(storageId);
+        }
+      }
+    }
+    return storageIds;
   }
 }
-
-// console.log(await queryBuilder.getMany());
-// if (input === ' ' && tagIds.length === 0) {
-//   return {
-//     data: [],
-//     total: 0,
-//   };
-// } else if (input === ' ' && tagIds.length !== 0) {
-//   queryBuilder.where('1 = 1').andWhere(
-//     new Brackets((qb) => {
-//       qb.where('tag.id = :id', { id: tagIds[0] });
-//       for (let i = 1; i < tagIds.length; i++) {
-//         qb.andWhere('tag.id = :id', { id: tagIds[i] });
-//       }
-//     }),
-//   );
-// } else if (input !== ' ' && tagIds.length === 0) {
-//   queryBuilder.where('tag.title like :input', { input: `%${input}` });
-// } else {
-//   queryBuilder.where('1 = 1').andWhere(
-//     new Brackets((qb) => {
-//       qb.where('tag.id = :id', { id: tagIds[0] });
-//       for (let i = 1; i < tagIds.length; i++) {
-//         qb.andWhere('tag.id = :id', { id: tagIds[i] });
-//       }
-//     }),
-//   );
-//   queryBuilder.andWhere('tag.title like :input', { input: `%${input}` });
-// }
-// const [items, total] = await queryBuilder.getManyAndCount();
-// return { items, total };
