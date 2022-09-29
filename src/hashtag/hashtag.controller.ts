@@ -81,7 +81,10 @@ export class HashtagController {
   }
 
   /* 검색 API -> 검색 키워드에 따른 인스타툰 list 제공 + 검색 count + 1*/
-  @ApiOperation({ summary: '검색 API' })
+  @ApiOperation({
+    summary:
+      '검색 API 예시 (input값 없을시 :/hashtags?tagIds=1,2,3) (input만 존재시 :/hashtags?input=육아)',
+  })
   @ApiOkResponse({
     description: '검색에 따른 인툰리스트 가져오기 성공',
     schema: {
