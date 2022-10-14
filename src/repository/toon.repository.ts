@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { ToonDto } from '../toon/dto/toon-create.dto';
 import { Toon } from '../entity/toon.entity';
@@ -13,10 +13,6 @@ import {
 } from 'src/toon/config/type.config';
 import { Nickname } from 'src/entity/nickname.entity';
 
-export interface ToonFindAllOptions {
-  input?: string;
-  tagIds?: number[];
-}
 @EntityRepository(Toon)
 export class ToonRepository extends Repository<Toon> {
   private response: CommonResponseDto;
@@ -266,15 +262,74 @@ export class ToonRepository extends Repository<Toon> {
 
   async findAll(options: ToonFindAllOptions = {}) {
     const { input, tagIds } = options;
-    console.log(input);
-    console.log(tagIds);
-    const qb = this.createQueryBuilder('toon').leftJoinAndSelect(
+    const length = tagIds.length;
+    const queryBuilder = this.createQueryBuilder('toon').leftJoinAndSelect(
       'toon.tag',
       'tag',
     );
-    const tag = [1];
-    qb.andWhere('tag.id IN (:...tag)', { tag });
-    const [items, total] = await qb.getManyAndCount();
-    return { items, total };
+    try {
+      if (input === ' ' && length === 0) {
+        this.response = new CommonResponseDto(200, true, '조회 성공');
+      } else {
+        if (length > 0) {
+          const result = await queryBuilder.getMany();
+          const filters = result.filter((toon) => {
+            let isExist = false;
+            tagIds.forEach((id) => {
+              toon.tag.forEach((tag) => {
+                Logger.verbose('id 및 toon의 tag id', id, tag.id);
+                if (id === tag.id) isExist = true;
+              });
+            });
+            if (isExist) return true;
+          });
+          Logger.verbose('검색 태그 길이 및 필터링된 인스타툰', filters);
+          if (input === ' ') {
+            this.response = new CommonResponseDto(
+              200,
+              true,
+              '검색 성공',
+              filters,
+            );
+          } else {
+            this.response = this.filterTopic(filters, input);
+          }
+        } else {
+          const result = await queryBuilder.getMany();
+          this.response = this.filterTopic(result, input);
+        }
+        return this.response;
+      }
+    } catch (error) {
+      Logger.verbose('검색 에러', error);
+    }
+  }
+  filterTopic(toons: any, input: any) {
+    const result = [];
+    for (let i = 0; i < toons.length; i++) {
+      for (let j = 0; j < toons[i].tag.length; j++) {
+        if (
+          toons[i].tag[j].category == 'subject' &&
+          toons[i].tag[j].title.includes(input)
+        ) {
+          result.push(toons[i]);
+        }
+      }
+    }
+    return new CommonResponseDto(200, true, '검색 성공', result);
+  }
+  findStorageIds(nickname: Nickname, toonId: number) {
+    const storageIds: number[] = [];
+
+    for (let i = 0; i < Object.keys(nickname.storages).length; i++) {
+      const length = Object.keys(nickname.storages[i].toons).length;
+      for (let j = 0; j < length; j++) {
+        if (nickname.storages[i].toons[j].id === toonId) {
+          const storageId = nickname.storages[i].storageId;
+          storageIds.push(storageId);
+        }
+      }
+    }
+    return storageIds;
   }
 }
