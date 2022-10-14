@@ -22,11 +22,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import {
-  responseFailDto,
-  responseListDto,
-  responseToonDto,
-} from '../api/globalDTO';
+import { CommonResponseDto } from 'src/api/common-response.dto';
+import { responseFailDto, responseToonDto } from '../api/globalDTO';
+import { RecommendConfig } from './config/type.config';
 import { RelationDto } from './dto/relation.dto';
 import { ToonDto } from './dto/toon-create.dto';
 import { ToonHashTagDto } from './dto/toon-hashtag.dto';
@@ -47,56 +45,36 @@ export class ToonController {
 
   //GET 최근 등록 순으로 인스타툰 가져오기
   @ApiOperation({ summary: '새롭게 등록된 툰 API' })
-  @ApiResponse({ status: 200, description: '성공', type: responseListDto })
+  @ApiOkResponse({
+    status: 200,
+    description: '성공',
+    schema: {
+      example: new CommonResponseDto(200, true, '최근 등록된 인스타툰 목록'),
+    },
+  })
   @ApiNotFoundResponse({
     status: 404,
     description: '툰이 존재하지 않음',
-    type: responseFailDto,
+    schema: {
+      example: new CommonResponseDto(404, false, '등록된 툰이 없습니다.'),
+    },
   })
   @Get('/recent')
-  getRecentToons(): Promise<any> {
+  getRecentToons(): Promise<CommonResponseDto> {
     return this.toonService.getRecentToons();
   }
 
   @ApiOperation({ summary: '실시간 인기툰 API' })
   @ApiOkResponse({
     status: 200,
-    schema: {
-      example: Object.assign({
-        data: [
-          {
-            id: 10,
-            authorName: '현이',
-            instagramId: 'hyuny_beeny',
-            description: '하고 싶은게 많은 시각디자인과 미대생 현이의 일상',
-            imgUrl:
-              'https://user-images.githubusercontent.com/52276038/177171189-c8f546fd-4865-4480-b438-bf026f6e4e1c.png',
-            instagramUrl: 'https://instagram.com/hyuny_bee',
-            htmlUrl:
-              'http://my-app-elb-251560380.ap-northeast-2.elb.amazonaws.com/toons/page?name=hyuny_beeny',
-            likeCount: 0,
-            createAt: '2022-07-08T04:02:00.597Z',
-            tag: [
-              {
-                id: 5,
-                title: '드로잉',
-                count: 2,
-                category: 'drawing',
-              },
-            ],
-          },
-        ],
-        statusCode: 200,
-        ok: true,
-        message: '조회 성공',
-      }),
-    },
+    schema: { example: new CommonResponseDto(200, true, '조회 성공') },
   })
   @Get('/popular-list')
-  getPopularList(): Promise<any> {
+  getPopularList(): Promise<CommonResponseDto> {
     return this.toonService.getPopularList();
   }
-  //GET bookmark
+
+  //Patch bookmark
   @ApiOperation({
     summary:
       '유저마다 좋아요 누른 툰과 북마크 툰 등록 API / 등록: key = true 등록 취소: key = false',
@@ -104,43 +82,51 @@ export class ToonController {
   @ApiOkResponse({
     description: '성공',
     schema: {
-      example: {
-        statusCode: 200,
-        message: '좋아요 및 북마크 추가 또는 취소',
-        success: true,
-      },
+      example: new CommonResponseDto(200, true, '좋아요 및 북마크 추가'),
     },
   })
-  @Get('isLikeBookmark')
-  addRecommendedWithBookmark(
-    @Query('userId', ParseIntPipe) userId: number,
+  @ApiOkResponse({
+    description: '성공',
+    schema: {
+      example: new CommonResponseDto(200, true, '좋아요 및 북마크 취소'),
+    },
+  })
+  @Patch('isLikeBookmark')
+  patchRecommended(
+    @Query('nickName') nickName: string,
     @Query('toonId', ParseIntPipe) toonId: number,
     @Query('key', ParseBoolPipe) key: boolean,
-  ) {
-    return this.toonService.addRecommendedWithBookmark(userId, toonId, key);
+  ): Promise<CommonResponseDto> {
+    const recommendConfig: RecommendConfig = {
+      nickName: nickName,
+      toonId: toonId,
+      key: key,
+    };
+    return this.toonService.patchRecommended(recommendConfig);
   }
+
   //GET 인툰 목록
   @ApiOperation({ summary: '인스타툰 전체 목록 API' })
-  @ApiResponse({ status: 200, description: '성공', type: responseListDto })
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+    schema: { example: new CommonResponseDto(200, true, '성공') },
+  })
   @Get()
-  getAllToons() {
+  getAllToons(): Promise<CommonResponseDto> {
     return this.toonService.getAllToons();
   }
 
-  @ApiOperation({ summary: '추천툰 API' })
+  @ApiOperation({ summary: '랜덤 추천툰 API 4개' })
   @ApiOkResponse({
     status: 200,
+    description: '추천 API 성공',
     schema: {
-      example: {
-        data: [],
-        statusCode: 200,
-        ok: true,
-        message: '추천 API 성공',
-      },
+      example: new CommonResponseDto(200, true, '추천 API 성공'),
     },
   })
   @Get('/random')
-  getRandomToons() {
+  getRandomToons(): Promise<CommonResponseDto> {
     return this.toonService.getRandomToons();
   }
 
@@ -149,55 +135,15 @@ export class ToonController {
   @ApiResponse({
     status: 200,
     schema: {
-      example: Object.assign({
-        data: [
-          {
-            id: 10,
-            authorName: '현이',
-            instagramId: 'hyuny_beeny',
-            description: '하고 싶은게 많은 시각디자인과 미대생 현이의 일상',
-            imgUrl:
-              'https://user-images.githubusercontent.com/52276038/177171189-c8f546fd-4865-4480-b438-bf026f6e4e1c.png',
-            instagramUrl: 'https://instagram.com/hyuny_bee',
-            htmlUrl:
-              'http://my-app-elb-251560380.ap-northeast-2.elb.amazonaws.com/toons/page?name=hyuny_beeny',
-            likeCount: 0,
-            createAt: '2022-07-08T04:02:00.597Z',
-            tag: [
-              {
-                id: 5,
-                title: '드로잉',
-                count: 2,
-                category: 'drawing',
-              },
-            ],
-          },
-        ],
-        statusCode: 200,
-        ok: true,
-        message: '성공',
-      }),
+      example: new CommonResponseDto(200, true, '성공'),
     },
   })
-  @Get('/:userId/:toonId')
+  @Get('/:nickName/:toonId')
   getToonById(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('nickName') nickName: string,
     @Param('toonId', ParseIntPipe) toonId: number,
-  ) {
-    return this.toonService.getToonById(userId, toonId);
-  }
-
-  //PATCH 인스타툰 작품마다 좋아요 누르기
-  @ApiOperation({
-    summary:
-      '인스타툰 작품에 좋아요/하트 API count수 증가: key=true 감소: key=false',
-  })
-  @Patch('/:id')
-  makeHeartCount(
-    @Param('id', ParseIntPipe) id: number,
-    @Query('key', ParseBoolPipe) boolType: boolean,
-  ): Promise<any> {
-    return this.toonService.makeHeartCount(id, boolType);
+  ): Promise<CommonResponseDto> {
+    return this.toonService.getToonById(nickName, toonId);
   }
 
   //POST 인툰 생성

@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BannerRepository } from '../repository/banner.repository';
 import { RelationDto } from './dto/relation.dto';
@@ -15,10 +10,11 @@ import { ToonHashTagDto } from './dto/toon-hashtag.dto';
 import { HashTagRepository } from '../repository/hashtag.repository';
 import { HashTag } from '../entity/hashtag.entity';
 import { Toon } from '../entity/toon.entity';
-import { BookMarkRepository } from '../repository/bookmark.repository';
-import { RecommnededRepository } from '../repository/recommended.repository';
-import { ToonDetailDto } from './dto/toon-detail.dto';
-
+import { CommonResponseDto } from 'src/api/common-response.dto';
+import { RecommnededRepository } from 'src/repository/recommended.repository';
+import { GetToonDetailConfig, RecommendConfig } from './config/type.config';
+import { StorageRepository } from 'src/repository/storage.repository';
+import { NicknameRepository } from 'src/repository/nickname.repository';
 @Injectable()
 export class ToonService {
   constructor(
@@ -34,62 +30,67 @@ export class ToonService {
     @InjectRepository(HashTagRepository)
     private hashTagRepository: HashTagRepository,
 
-    @InjectRepository(BookMarkRepository)
-    private bookmarkRepository: BookMarkRepository,
-
     @InjectRepository(RecommnededRepository)
     private recommendedRepository: RecommnededRepository,
-  ) {}
 
+    @InjectRepository(NicknameRepository)
+    private nicknameRepository: NicknameRepository,
+
+    @InjectRepository(StorageRepository)
+    private storageRepository: StorageRepository,
+  ) {}
   // 인스타툰 링크주소 생성
   async createToon(toonDto: ToonDto): Promise<any> {
     return this.toonRepository.createToon(toonDto);
   }
 
   // 인스타툰 전체 목록 가져오기
-  async getAllToons() {
+  async getAllToons(): Promise<CommonResponseDto> {
     return this.toonRepository.getAllToons();
   }
 
   // 새로 등록된 인스타툰 API
-  async getRecentToons(): Promise<any> {
+  async getRecentToons(): Promise<CommonResponseDto> {
     return this.toonRepository.getRecentToons();
   }
 
   // 랜덤 툰 API
-  async getRandomToons() {
+  async getRandomToons(): Promise<CommonResponseDto> {
     return this.toonRepository.getRandomToons();
   }
-
-  //실시간 인기툰 API
-  async getPopularList(): Promise<any> {
+  // 실시간 인기툰 API
+  async getPopularList(): Promise<CommonResponseDto> {
     return this.toonRepository.getPopularList();
   }
-
-  showHtmlRendering(name: string): string {
-    return name;
+  // 인스타툰 상세 정보 가져오기
+  async getToonById(
+    nickName: string,
+    toonId: number,
+  ): Promise<CommonResponseDto> {
+    const getToonDetail: GetToonDetailConfig = {
+      nickName: nickName,
+      toonId: toonId,
+      recommendedRepository: this.recommendedRepository,
+      nicknameRepository: this.nicknameRepository,
+      storageRepository: this.storageRepository,
+    };
+    return this.toonRepository.getToonById(getToonDetail);
   }
 
-  // 인스타툰 상세 정보 가져오기
-  async getToonById(userId: number, toonId: number) {
-    let toonDetail: ToonDetailDto;
-    const toon = await this.toonRepository.getToonById(toonId);
-    const recommend = await this.recommendedRepository.getRecommended(
-      userId,
-      toonId,
+  // 추천하기 추가
+  async patchRecommended(
+    recommendConfig: RecommendConfig,
+  ): Promise<CommonResponseDto> {
+    this.recommendedRepository;
+    return this.toonRepository.patchRecommended(
+      recommendConfig,
+      this.recommendedRepository,
     );
-    if (!toon) throw new NotFoundException('존재하지 않는 id입니다.');
-    if (!recommend) {
-      toonDetail = new ToonDetailDto(toon, false);
-    } else {
-      toonDetail = new ToonDetailDto(toon, true);
-    }
-    return Object.assign({
-      data: [toonDetail],
-      statusCode: 200,
-      ok: true,
-      message: '성공',
-    });
+  }
+
+  // HTML Rendering
+  showHtmlRendering(name: string): string {
+    return name;
   }
 
   //인스타툰 배너에 등록하기
@@ -152,89 +153,6 @@ export class ToonService {
       });
     } catch (NotFoundException) {
       throw NotFoundException;
-    }
-  }
-
-  //인스타툰 작품 하트 수 증가 또는 감소 API
-  async makeHeartCount(id: number, boolType: boolean): Promise<any> {
-    Logger.verbose(id, boolType);
-    try {
-      const toon = await this.toonRepository.findOne(id);
-      if (!toon) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '등록된 툰이 없습니다.',
-          }),
-        );
-      } else {
-        if (boolType) {
-          // boolType is true 하트 수 증가
-          toon.likeCount += 1;
-        } else {
-          if (toon.likeCount >= 1) {
-            toon.likeCount -= 1;
-          }
-        }
-        await this.toonRepository.save(toon);
-      }
-      return Object.assign({
-        statusCode: 200,
-        ok: true,
-        message: '성공적으로 작업하였습니다.',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
-  }
-
-  // 북마크 및 좋아요 추가
-  async addRecommendedWithBookmark(
-    userId: number,
-    toonId: number,
-    key: boolean,
-  ) {
-    if (key) {
-      const recommendResult = await this.recommendedRepository.addRecommended(
-        userId,
-        toonId,
-      );
-      const bookmarkResult = await this.bookmarkRepository.addBookMark(
-        userId,
-        toonId,
-      );
-
-      if (recommendResult === true && bookmarkResult === true) {
-        return Object.assign({
-          statusCode: 200,
-          message: '좋아요 및 북마크 추가',
-          success: true,
-        });
-      } else {
-        throw new BadRequestException(
-          '이미 좋아요 및 북마크를 등록한 툰입니다.',
-        );
-      }
-    } else {
-      const recommendResult =
-        await this.recommendedRepository.deleteRecommended(userId, toonId);
-      const bookmarkResult = await this.bookmarkRepository.deleteBookMark(
-        userId,
-        toonId,
-      );
-
-      if (recommendResult === true && bookmarkResult === true) {
-        return Object.assign({
-          statusCode: 200,
-          message: '좋아요 및 북마크 취소',
-          success: true,
-        });
-      } else {
-        throw new BadRequestException(
-          '이미 좋아요 및 북마크를 취소된 툰입니다.',
-        );
-      }
     }
   }
 }

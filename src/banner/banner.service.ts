@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ToonRepository } from '../repository/toon.repository';
 import { BannerRepository } from '../repository/banner.repository';
 import { BannerDto } from './dto/banner.dto';
+import { RecommnededRepository } from 'src/repository/recommended.repository';
+import { CommonResponseDto } from 'src/api/common-response.dto';
+import { ToonConfig, ToonDetailConfig } from 'src/toon/config/type.config';
 
 @Injectable()
 export class BannerService {
@@ -12,6 +15,9 @@ export class BannerService {
 
     @InjectRepository(ToonRepository)
     private toonRepository: ToonRepository,
+
+    @InjectRepository(RecommnededRepository)
+    private recommendedRepository: RecommnededRepository,
   ) {}
 
   async createBanner(bannerDto: BannerDto) {
@@ -43,22 +49,38 @@ export class BannerService {
     }
   }
 
-  async getAllToonsByRandom() {
+  async getAllToonsByRandom(nickName: string) {
     // 랜덤 배너 가져오기
+    let toonDetail: ToonDetailDto;
     const toonQuery = this.toonRepository
       .createQueryBuilder('toon')
       .leftJoinAndSelect('toon.tag', 'tag');
-
-    const toons = await toonQuery.getMany();
+    const toons: ToonConfig[] = await toonQuery.getMany();
     toons.sort(() => Math.random() - 0.5);
-
-    const randomToons = toons.splice(0, 1);
-    return Object.assign({
-      data: randomToons,
-      statusCode: 200,
-      ok: true,
-      message: '랜덤으로 툰 가져오기 성공',
-    });
+    const randomToon: ToonConfig = toons.splice(0, 1)[0];
+    const recommend = await this.recommendedRepository.getRecommended(
+      nickName,
+      randomToon.id,
+    );
+    const toonDetail: ToonDetailConfig = {
+      id: randomToon.id,
+      authorName: randomToon.authorName,
+      instagramId: randomToon.instagramId,
+      description: randomToon.description,
+      imgUrl: randomToon.imgUrl,
+      instagramUrl: randomToon.instagramUrl,
+      htmlUrl: randomToon.htmlUrl,
+      likeCount: randomToon.likeCount,
+      createAt: randomToon.createAt,
+      tag: randomToon.tag,
+      isRecommended: true,
+    };
+    if (!recommend) {
+      toonDetail.isRecommended = false;
+    }
+    return new CommonResponseDto(200, true, '랜덤으로 툰 가져오기 성공', [
+      toonDetail,
+    ]);
   }
 
   async getAllToonsByBanner(id: number) {

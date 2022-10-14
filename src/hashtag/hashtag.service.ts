@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CommonResponseDto } from 'src/api/common-response.dto';
+import { ToonFindAllOptions } from 'src/toon/config/type.config';
 import { HashTagRepository } from '../repository/hashtag.repository';
-import { ToonRepository } from '../repository/toon.repository';
+import {
+  ToonFindAllOptions,
+  ToonRepository,
+} from '../repository/toon.repository';
 import { HashTagDto } from './dto/hashtag-create.dto';
 
 @Injectable()
@@ -14,64 +19,33 @@ export class HashtagService {
     private toonRepository: ToonRepository,
   ) {}
 
-  async createHashtag(hashTagDto: HashTagDto): Promise<any> {
+  async createHashtag(hashTagDto: HashTagDto): Promise<CommonResponseDto> {
     return this.hashTagRepository.createHashtag(hashTagDto);
   }
 
-  async getAllTags(): Promise<any> {
-    try {
-      const query = this.hashTagRepository.createQueryBuilder('hashtag');
-      const hashtags = await query.getMany();
-      if (!hashtags)
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '태그 목록이 없습니다.',
-          }),
-        );
-      return Object.assign({
-        data: hashtags,
-        statusCode: 200,
-        ok: true,
-        message: '태그 목록 조회 성공',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
+  async getAllTags(): Promise<CommonResponseDto> {
+    return this.hashTagRepository.getAllTags();
   }
 
-  async getPopularKeyWords(): Promise<any> {
-    try {
-      const hashtags = await this.hashTagRepository
-        .createQueryBuilder('hashtag')
-        .orderBy('hashtag.count', 'DESC')
-        .limit(10)
-        .getMany();
-
-      if (!hashtags) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '해쉬 태그가 존재하지 않습니다.',
-          }),
-        );
-      }
-
-      return Object.assign({
-        data: hashtags,
-        statusCode: 200,
-        ok: true,
-        message: '인기 검색 키워드',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
+  async getPopularKeyWords(): Promise<CommonResponseDto> {
+    return this.hashTagRepository.getPopularKeyWords();
   }
 
-  async getSearchKeyWord(tagName: string): Promise<any> {
-    try {
+  async findAll(search: ToonFindAllOptions): Promise<CommonResponseDto> {
+    return this.toonRepository.findAll(search);
+  }
+
+  async getTopicKeyWords(): Promise<CommonResponseDto> {
+    return this.hashTagRepository.getTopicKeyWords();
+  }
+
+  async getDrawStyleKeyWords(): Promise<CommonResponseDto> {
+    return this.hashTagRepository.getDrawStyleKeyWords();
+  }
+}
+
+/**
+ * try {
       const hashtag = await this.hashTagRepository
         .createQueryBuilder('hashtag')
         .where('hashtag.title = :title', { title: tagName })
@@ -111,61 +85,4 @@ export class HashtagService {
     } catch (NotFoundException) {
       throw NotFoundException;
     }
-  }
-
-  async getTopicKeyWord(): Promise<any> {
-    try {
-      const tags = await this.hashTagRepository
-        .createQueryBuilder('hashtag')
-        .where('hashtag.category = :category', { category: '주제' })
-        .getMany();
-
-      if (!tags) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '주제 키워드가 존재하지 않습니다.',
-          }),
-        );
-      }
-
-      return Object.assign({
-        data: tags,
-        statusCode: 200,
-        ok: true,
-        message: '주제 키워드 list',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
-  }
-
-  async getDrawStyleKeyWord(): Promise<any> {
-    try {
-      const tags = await this.hashTagRepository
-        .createQueryBuilder('hashtag')
-        .where('hashtag.category = :category', { category: '그림체' })
-        .getMany();
-
-      if (!tags) {
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '그림체 키워드가 존재하지 않습니다.',
-          }),
-        );
-      }
-
-      return Object.assign({
-        data: tags,
-        statusCode: 200,
-        ok: true,
-        message: '그림체 키워드 list',
-      });
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
-  }
-}
+ */

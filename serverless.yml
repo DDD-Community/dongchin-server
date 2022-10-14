@@ -21,7 +21,7 @@ provider:
   stage: ${opt:stage, 'dev'}
 
 functions:
-  api:
+  app:
     handler: dist/main.handler
     events:
       - http:

@@ -5,14 +5,16 @@ import { ToonsListDto } from '../storage/dto/toon-list.dto';
 import { EntityRepository, Repository } from 'typeorm';
 import { NicknameRepository } from './nickname.repository';
 import { ToonRepository } from './toon.repository';
+import { CommonResponseDto } from 'src/api/common-response.dto';
 
 @EntityRepository(Storage)
 export class StorageRepository extends Repository<Storage> {
+  private response: CommonResponseDto;
   async createStorage(
     nicknameRepository: NicknameRepository,
     name: string,
     nickName: string,
-  ) {
+  ): Promise<CommonResponseDto> {
     const nickname = await nicknameRepository.findOne({
       nickName: nickName,
     });
@@ -22,30 +24,26 @@ export class StorageRepository extends Repository<Storage> {
       const storage = this.create({ name: name });
       storage.save(nickname);
       await this.save(storage);
-      return Object.assign({
-        statusCode: 201,
-        ok: true,
-        message: '보관함이 생성되었습니다.',
-      });
+      this.response = new CommonResponseDto(
+        201,
+        true,
+        '보관함이 생성되었습니다.',
+      );
+      return this.response;
     }
   }
 
-  async getStorageByNickname(
+  async getStorage(
     nicknameRepository: NicknameRepository,
     nickName: string,
-  ): Promise<StorageDetailDto[]> {
+  ): Promise<CommonResponseDto> {
     const storageDetails: StorageDetailDto[] = [];
-    const result = await nicknameRepository
-      .createQueryBuilder('nickname')
-      .select('nickname.nickName')
-      .leftJoinAndSelect('nickname.storages', 'storage')
-      .leftJoinAndSelect('storage.toons', 'toon')
-      .andWhere('nickname.nickName = :nickname', { nickname: nickName })
-      .getOne();
+    const result = await this.getStorageBynickname(
+      nicknameRepository,
+      nickName,
+    );
 
-    const length = Object.keys(result.storages).length;
-
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < Object.keys(result.storages).length; i++) {
       const toonsLength = Object.keys(result.storages[i].toons).length;
       const storageName = result.storages[i].name;
       const storageId = result.storages[i].storageId;
@@ -54,20 +52,20 @@ export class StorageRepository extends Repository<Storage> {
         new StorageDetailDto(storageName, storageId, toonImg, toonsLength),
       );
     }
-    //console.log(storageDetails);
-    return Object.assign({
-      data: storageDetails,
-      statusCode: 200,
-      ok: true,
-      message: '보관함이 조회 성공.',
-    });
+    this.response = new CommonResponseDto(
+      200,
+      true,
+      '보관함 조회 성공',
+      storageDetails,
+    );
+    return this.response;
   }
 
   async addToonByStorageId(
     toonRepository: ToonRepository,
     storageId: number,
     toonId: number,
-  ) {
+  ): Promise<CommonResponseDto> {
     const storage = await this.findOne({ storageId: storageId });
     const toon = await toonRepository.findOne({ id: toonId });
 
@@ -75,28 +73,23 @@ export class StorageRepository extends Repository<Storage> {
       throw new NotFoundException('Id를 찾을 수 없습니다.');
     }
     const toons = storage.toons;
-    console.log(toons);
+    this.response = new CommonResponseDto(
+      200,
+      true,
+      '보관함에 인스타툰 추가 성공',
+    );
     if (toons.length === 0) {
       storage.toons = [toon];
       await this.save(storage);
-      return Object.assign({
-        statusCode: 200,
-        ok: true,
-        message: '보관함에 인스타툰 추가 성공',
-      });
     } else {
       toons.push(toon);
       storage.toons = toons;
       await this.save(storage);
-      return Object.assign({
-        statusCode: 200,
-        ok: true,
-        message: '보관함에 인스타툰 추가 성공',
-      });
     }
+    return this.response;
   }
 
-  async getToonsByStorageId(id: number) {
+  async getToonsByStorageId(id: number): Promise<CommonResponseDto> {
     const toons = await this.createQueryBuilder('storage')
       .leftJoinAndSelect('storage.toons', 'toon')
       .leftJoinAndSelect('toon.tag', 'tag')
@@ -105,15 +98,14 @@ export class StorageRepository extends Repository<Storage> {
 
     if (toons.length == 0)
       throw new NotFoundException('찾을 수 없는 storageId입니다.');
-    return Object.assign({
-      data: toons,
-      statusCode: 200,
-      ok: true,
-      message: '조회 성공',
-    });
+    this.response = new CommonResponseDto(200, true, '조회 성공', toons);
+    return this.response;
   }
 
-  async deleteToonsByStorageId(id: number, toonsIdDto: ToonsListDto) {
+  async deleteToonsByStorageId(
+    id: number,
+    toonsIdDto: ToonsListDto,
+  ): Promise<CommonResponseDto> {
     const storage = await this.findOne({ storageId: id });
     const toons = storage.toons;
     const { toonsIdArray } = toonsIdDto;
@@ -128,38 +120,54 @@ export class StorageRepository extends Repository<Storage> {
     }
     storage.toons = toons;
     await this.save(storage);
-    return Object.assign({
-      statusCode: 200,
-      ok: true,
-      message: '성공',
-    });
+    this.response = new CommonResponseDto(200, true, '성공');
+    return this.response;
   }
 
-  async deleteStorageById(storageId: number) {
+  async deleteStorageById(storageId: number): Promise<CommonResponseDto> {
     const result = await this.delete({ storageId: storageId });
     if (result.affected === 0) {
       throw new NotFoundException('잘못된 storageId입니다.');
     } else {
-      return Object.assign({
-        statusCode: 200,
-        success: true,
-        message: '보관함이 삭제되었습니다.',
-      });
+      this.response = new CommonResponseDto(
+        200,
+        true,
+        '보관함이 삭제되었습니다.',
+      );
+      return this.response;
     }
   }
 
-  async updateStorageName(storageId: number, name: string) {
+  async updateStorageName(
+    storageId: number,
+    name: string,
+  ): Promise<CommonResponseDto> {
     const storage = await this.findOne({ storageId: storageId });
     if (!storage) {
       throw new NotFoundException('잘못된 storageId로 찾을 수 없습니다.');
     } else {
       storage.name = name;
       await this.save(storage);
-      return Object.assign({
-        statusCode: 200,
-        ok: true,
-        message: '보관함 이름이 변경되었습니다.',
-      });
+      this.response = new CommonResponseDto(
+        200,
+        true,
+        '보관함 이름이 변경되었습니다.',
+      );
+      return this.response;
     }
+  }
+
+  getStorageBynickname(
+    nicknameRepository: NicknameRepository,
+    nickname: string,
+  ) {
+    const result = nicknameRepository
+      .createQueryBuilder('nickname')
+      .select('nickname.nickName')
+      .leftJoinAndSelect('nickname.storages', 'storage')
+      .leftJoinAndSelect('storage.toons', 'toon')
+      .andWhere('nickname.nickName = :nickname', { nickname: nickname })
+      .getOne();
+    return result;
   }
 }
