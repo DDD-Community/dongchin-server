@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,6 +9,7 @@ import { NickNameCredentialDto } from './dto/nickname-credential.dto';
 import { Nickname } from '../entity/nickname.entity';
 import { NicknameRepository } from '../repository/nickname.repository';
 import { StorageRepository } from '../repository/storage.repository';
+import { CommonResponseDto } from 'src/api/common-response.dto';
 
 @Injectable()
 export class NicknameService {
@@ -26,7 +26,7 @@ export class NicknameService {
   //닉네임 생성 Function
   async createNickName(
     nicknameCredentialDto: NickNameCredentialDto,
-  ): Promise<any> {
+  ): Promise<CommonResponseDto> {
     return this.nickNameRepository.createNickName(
       nicknameCredentialDto,
       this.storageRepository,
@@ -34,93 +34,77 @@ export class NicknameService {
   }
 
   //닉네임 조회 Function
-  async getNickNameById(id: number): Promise<Nickname> {
+  async getNickNameById(id: number): Promise<CommonResponseDto> {
     const user = await this.nickNameRepository.findOne(id);
     if (!user || !id) {
-      const notNickname = new Nickname();
-      notNickname.id = id;
-      notNickname.nickName = Config.NOT_FOUND_NICKNAME;
-      return notNickname;
+      throw new NotFoundException('닉네임을 찾을 수 없습니다.');
     }
-    Logger.verbose('user', JSON.stringify(user));
-    return user;
+    const response: CommonResponseDto = new CommonResponseDto(
+      200,
+      true,
+      '닉네임을 찾았습니다.',
+      user,
+    );
+    return response;
   }
 
   // 닉네임 이름으로 중복체크 Function
-  async checkValidation(nickName: string): Promise<any> {
+  async checkValidation(nickName: string): Promise<CommonResponseDto> {
     try {
+      let response: CommonResponseDto;
       const user = await this.nickNameRepository
         .createQueryBuilder('nickname')
         .where('nickname.nickName = :nickName', { nickName })
         .getOne();
       if (user === undefined) {
-        return Object.assign({
-          statusCode: 200,
-          ok: true,
-          message: '닉네임 사용이 가능합니다.',
-        });
+        response = new CommonResponseDto(
+          200,
+          true,
+          '닉네임 사용이 가능합니다.',
+        );
       } else {
-        return Object.assign({
-          statusCode: 200,
-          ok: false,
-          message: '닉네임 사용이 불가능합니다.',
-        });
+        response = new CommonResponseDto(
+          200,
+          false,
+          '닉네임 사용이 불가능합니다.',
+        );
       }
-    } catch (error) {
-      Logger.verbose('error', error);
-    }
+      return response;
+    } catch (error) {}
   }
 
   //닉네임 수정 Function
   async updateNickName(
     id: number,
     nicknameCredentialDto: NickNameCredentialDto,
-  ): Promise<any> {
-    const user = await this.getNickNameById(id);
-    Logger.verbose('user', JSON.stringify(user));
-    try {
-      const user = await this.getNickNameById(id);
-      Logger.verbose('user', JSON.stringify(user));
-      if (user.nickName === Config.NOT_FOUND_NICKNAME) {
-        // 닉네임을 찾을 수 없다면
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: 'id가 존재하지 않습니다.',
-          }),
-        );
-      }
-    } catch (NotFoundException) {
-      throw NotFoundException;
+  ): Promise<CommonResponseDto> {
+    const response = await this.getNickNameById(id);
+    if (response.message === Config.NOT_FOUND_NICKNAME) {
+      // 닉네임을 찾을 수 없다면
+      throw new NotFoundException('id가 존재하지 않습니다.');
+    } else {
+      response.data.nickName = nicknameCredentialDto.nickName; // 닉네임 변경
     }
-    user.nickName = nicknameCredentialDto.nickName; // 닉네임 변경
 
     try {
-      const result = await this.nickNameRepository.save(user);
-      Logger.verbose('user', JSON.stringify(result));
-      return Object.assign({
-        data: result,
-        statusCode: 200,
-        ok: true,
-        message: '닉네임이 변경되었습니다.',
-      });
+      const result = await this.nickNameRepository.save(response.data);
+      const res: CommonResponseDto = new CommonResponseDto(
+        200,
+        true,
+        '닉네임이 변경되었습니다.',
+        result,
+      );
+      return res;
     } catch (error) {
       // 닉네임 id는 존재하지만 중복되는 닉네임으로 변경하는 경우
       if (error.code === Config.OVERLAP_ERROR_CODE) {
-        throw new BadRequestException(
-          Object.assign({
-            statusCode: 400,
-            ok: false,
-            message: '변경하려는 닉네임이 중복됩니다.',
-          }),
-        );
+        throw new BadRequestException('변경하려는 닉네임이 중복됩니다.');
       }
     }
   }
 
   //닉네임 삭제 function
-  async deleteBynickName(nickName: string): Promise<any> {
+  async deleteBynickName(nickName: string): Promise<CommonResponseDto> {
     try {
       const result = await this.nickNameRepository
         .createQueryBuilder()
@@ -131,22 +115,15 @@ export class NicknameService {
 
       if (result.affected === this.FAIL_DELETE) {
         // delete 결과가 잘못됐다면
-        throw new NotFoundException(
-          Object.assign({
-            statusCode: 404,
-            ok: false,
-            message: '닉네임을 찾을 수 없습니다.',
-          }),
-        );
+        throw new NotFoundException('닉네임을 찾을 수 없습니다.');
       } else {
-        return Object.assign({
-          statusCode: 200,
-          ok: true,
-          message: '닉네임이 삭제되었습니다.',
-        });
+        const response: CommonResponseDto = new CommonResponseDto(
+          200,
+          true,
+          '닉네임이 삭제되었습니다.',
+        );
+        return response;
       }
-    } catch (NotFoundException) {
-      throw NotFoundException;
-    }
+    } catch (error) {}
   }
 }

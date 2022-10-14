@@ -14,6 +14,8 @@ import { Recommended } from '../entity/recommended.entity';
 import { BookMark } from '../entity/bookmark.entity';
 import { BookMarkRepository } from '../repository/bookmark.repository';
 import { RecommnededRepository } from '../repository/recommended.repository';
+import { NicknameRepository } from 'src/repository/nickname.repository';
+import { StorageRepository } from 'src/repository/storage.repository';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { RecommnededRepository } from '../repository/recommended.repository';
       HashTagRepository,
       BookMarkRepository,
       RecommnededRepository,
+      StorageRepository,
+      NicknameRepository,
     ]),
   ],
   controllers: [ToonController],

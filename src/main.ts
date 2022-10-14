@@ -14,6 +14,7 @@ import { resolve } from 'path';
 
 const binaryMimeTypes: string[] = [];
 import express from 'express';
+import { HttpExceptionFilter } from './util/http-exception.filter';
 let cachedServer: Server;
 
 async function bootstrapServer(): Promise<Server> {
@@ -29,6 +30,7 @@ async function bootstrapServer(): Promise<Server> {
     nestApp.useStaticAssets(resolve('./src/public'));
     nestApp.setBaseViewsDir(resolve('./src/views'));
     nestApp.setViewEngine('hbs');
+    nestApp.useGlobalFilters(new HttpExceptionFilter());
     await nestApp.init();
     await nestApp.listen(3000);
     cachedServer = createServer(expressApp, undefined, binaryMimeTypes);

@@ -9,20 +9,16 @@ export class RecommnededRepository extends Repository<Recommended> {
       // data가 없다면
       const data = this.create({ nickName: nickName, toonId: toonId });
       await this.save(data);
-      return true;
-    } else {
-      return false;
     }
+    return true;
   }
 
   async deleteRecommended(nickName: string, toonId: number) {
     const result = await this.getRecommended(nickName, toonId);
-    if (!result) {
-      return false;
-    } else {
+    if (result) {
       await this.delete(result);
-      return true;
     }
+    return false;
   }
 
   async getRecommended(nickName: string, toonId: number) {

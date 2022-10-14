@@ -4,7 +4,8 @@ import { ToonRepository } from '../repository/toon.repository';
 import { BannerRepository } from '../repository/banner.repository';
 import { BannerDto } from './dto/banner.dto';
 import { RecommnededRepository } from 'src/repository/recommended.repository';
-import { ToonDetailDto } from 'src/toon/dto/toon-detail.dto';
+import { CommonResponseDto } from 'src/api/common-response.dto';
+import { ToonConfig, ToonDetailConfig } from 'src/toon/config/type.config';
 
 @Injectable()
 export class BannerService {
@@ -54,24 +55,32 @@ export class BannerService {
     const toonQuery = this.toonRepository
       .createQueryBuilder('toon')
       .leftJoinAndSelect('toon.tag', 'tag');
-    const toons = await toonQuery.getMany();
+    const toons: ToonConfig[] = await toonQuery.getMany();
     toons.sort(() => Math.random() - 0.5);
-    const randomToon = toons.splice(0, 1)[0];
+    const randomToon: ToonConfig = toons.splice(0, 1)[0];
     const recommend = await this.recommendedRepository.getRecommended(
       nickName,
       randomToon.id,
     );
+    const toonDetail: ToonDetailConfig = {
+      id: randomToon.id,
+      authorName: randomToon.authorName,
+      instagramId: randomToon.instagramId,
+      description: randomToon.description,
+      imgUrl: randomToon.imgUrl,
+      instagramUrl: randomToon.instagramUrl,
+      htmlUrl: randomToon.htmlUrl,
+      likeCount: randomToon.likeCount,
+      createAt: randomToon.createAt,
+      tag: randomToon.tag,
+      isRecommended: true,
+    };
     if (!recommend) {
-      toonDetail = new ToonDetailDto(randomToon, false);
-    } else {
-      toonDetail = new ToonDetailDto(randomToon, true);
+      toonDetail.isRecommended = false;
     }
-    return Object.assign({
-      data: [toonDetail],
-      statusCode: 200,
-      ok: true,
-      message: '랜덤으로 툰 가져오기 성공',
-    });
+    return new CommonResponseDto(200, true, '랜덤으로 툰 가져오기 성공', [
+      toonDetail,
+    ]);
   }
 
   async getAllToonsByBanner(id: number) {
