@@ -17,6 +17,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { CommonResponseDto } from 'src/api/common-response.dto';
 import { StorageDto } from './dto/storage-create.dto';
 import { StorageToonDto } from './dto/storage-toon.dto';
 import { ToonsListDto } from './dto/toon-list.dto';
@@ -31,15 +32,13 @@ export class StorageController {
   @ApiResponse({
     status: 201,
     schema: {
-      example: Object.assign({
-        statusCode: 201,
-        ok: true,
-        message: '보관함이 생성되었습니다.',
-      }),
+      example: new CommonResponseDto(201, true, '보관함이 생성되었습니다.'),
     },
   })
   @Post()
-  createStorage(@Body(ValidationPipe) storageCreateDto: StorageDto) {
+  createStorage(
+    @Body(ValidationPipe) storageCreateDto: StorageDto,
+  ): Promise<CommonResponseDto> {
     const { name, nickName } = storageCreateDto;
     return this.storageService.createStorage(name, nickName);
   }
@@ -50,15 +49,13 @@ export class StorageController {
   @ApiOkResponse({
     status: 200,
     schema: {
-      example: Object.assign({
-        statusCode: 200,
-        ok: true,
-        message: '보관함에 인스타툰 추가 성공',
-      }),
+      example: new CommonResponseDto(200, true, '보관함에 인스타툰 추가 성공'),
     },
   })
   @Post('/toon')
-  addToonByStorageId(@Body(ValidationPipe) storageToonDto: StorageToonDto) {
+  addToonByStorageId(
+    @Body(ValidationPipe) storageToonDto: StorageToonDto,
+  ): Promise<CommonResponseDto> {
     const { storageId, toonId } = storageToonDto;
     return this.storageService.addToonByStorageId(storageId, toonId);
   }
@@ -67,44 +64,41 @@ export class StorageController {
   @ApiOperation({ summary: '보관함 조회 API' })
   @ApiResponse({
     schema: {
-      example: Object.assign({
-        data: [
-          {
-            storageName: '기본 보관함',
-            storageId: 2,
-            toonImg:
-              'https://user-images.githubusercontent.com/52276038/177170605-dc8cecbe-fdcf-4252-a908-d829992c4c30.png',
-            count: 2,
-          },
-          {
-            storageName: '연애 보관함',
-            storageId: 3,
-            toonImg: ' ',
-            count: 0,
-          },
-          {
-            storageName: '랜덤 보관함',
-            storageId: 4,
-            toonImg: ' ',
-            count: 0,
-          },
-        ],
-        statusCode: 200,
-        ok: true,
-        message: '조회 성공',
-      }),
+      example: new CommonResponseDto(200, true, '조회 성공', [
+        {
+          storageName: '기본 보관함',
+          storageId: 2,
+          toonImg:
+            'https://user-images.githubusercontent.com/52276038/177170605-dc8cecbe-fdcf-4252-a908-d829992c4c30.png',
+          count: 2,
+        },
+        {
+          storageName: '연애 보관함',
+          storageId: 3,
+          toonImg: ' ',
+          count: 0,
+        },
+        {
+          storageName: '랜덤 보관함',
+          storageId: 4,
+          toonImg: ' ',
+          count: 0,
+        },
+      ]),
     },
   })
   @Get('/')
-  getStorageByNickname(@Query('nickName') nickName: string) {
-    return this.storageService.getStorageByNickname(nickName);
+  getStorageByNickname(
+    @Query('nickName') nickName: string,
+  ): Promise<CommonResponseDto> {
+    return this.storageService.getStorage(nickName);
   }
 
   @ApiOperation({ summary: '보관함 상세 조회 API' })
   @ApiResponse({
     schema: {
-      example: {
-        data: {
+      example: new CommonResponseDto(200, true, '조회 성공', [
+        {
           storageId: 1,
           name: '기본 보관함',
           toons: [
@@ -136,14 +130,13 @@ export class StorageController {
             },
           ],
         },
-        statusCode: 200,
-        ok: true,
-        message: '조회 성공',
-      },
+      ]),
     },
   })
   @Get('/:id')
-  getToonsByStorageId(@Param('id', ParseIntPipe) id: number) {
+  getToonsByStorageId(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<CommonResponseDto> {
     return this.storageService.getToonsByStorageId(id);
   }
 
@@ -151,15 +144,13 @@ export class StorageController {
   @ApiOkResponse({
     status: 200,
     schema: {
-      example: Object.assign({
-        statusCode: 200,
-        success: true,
-        message: '보관함이 삭제되었습니다.',
-      }),
+      example: new CommonResponseDto(200, true, '보관함이 삭제되었습니다.'),
     },
   })
   @Delete()
-  deleteStorageById(@Query('storageId') storageId: number) {
+  deleteStorageById(
+    @Query('storageId') storageId: number,
+  ): Promise<CommonResponseDto> {
     return this.storageService.deleteStorageById(storageId);
   }
 
@@ -168,25 +159,25 @@ export class StorageController {
   @ApiOkResponse({
     status: 200,
     schema: {
-      example: Object.assign({ statusCode: 200, ok: true, message: '성공' }),
+      example: new CommonResponseDto(200, true, '성공.'),
     },
   })
   @Delete('/:id')
   deleteToonsByStorageId(
     @Param('id', ParseIntPipe) id: number,
     @Body(ValidationPipe) toonsIdDto: ToonsListDto,
-  ) {
+  ): Promise<CommonResponseDto> {
     return this.storageService.deleteToonsByStorageId(id, toonsIdDto);
   }
 
   @ApiOkResponse({
     status: 200,
     schema: {
-      example: {
-        statusCode: 200,
-        ok: true,
-        message: '보관함 이름이 변경되었습니다.',
-      },
+      example: new CommonResponseDto(
+        200,
+        true,
+        '보관함이 이름이 변경되었습니다.',
+      ),
     },
   })
   @ApiOperation({ summary: '보관함 이름 편집 API' })
@@ -194,7 +185,7 @@ export class StorageController {
   updateStorageName(
     @Query('storageId', ParseIntPipe) storageId: number,
     @Query('name') name: string,
-  ) {
+  ): Promise<CommonResponseDto> {
     return this.storageService.updateStorageName(storageId, name);
   }
 }
