@@ -51,6 +51,7 @@ export class BannerService {
 
   async getAllToonsByRandom(nickName: string) {
     // 랜덤 배너 가져오기
+    let toonDetail: ToonDetailDto;
     const toonQuery = this.toonRepository
       .createQueryBuilder('toon')
       .leftJoinAndSelect('toon.tag', 'tag');
