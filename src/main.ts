@@ -11,10 +11,10 @@ import { eventContext } from 'aws-serverless-express/middleware';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerSetup } from './util/swagger';
 import { resolve } from 'path';
-
-const binaryMimeTypes: string[] = [];
 import express from 'express';
 import { HttpExceptionFilter } from './util/http-exception.filter';
+
+const binaryMimeTypes: string[] = [];
 let cachedServer: Server;
 
 async function bootstrapServer(): Promise<Server> {
@@ -27,9 +27,7 @@ async function bootstrapServer(): Promise<Server> {
     nestApp.use(eventContext());
     nestApp.useGlobalPipes(new ValidationPipe({ transform: true }));
     SwaggerSetup(nestApp);
-    nestApp.useStaticAssets(resolve('./src/public'));
     nestApp.setBaseViewsDir(resolve('./src/views'));
-    nestApp.use('/static', express.static('./src/views'));
     nestApp.setViewEngine('hbs');
     nestApp.useGlobalFilters(new HttpExceptionFilter());
     await nestApp.init();

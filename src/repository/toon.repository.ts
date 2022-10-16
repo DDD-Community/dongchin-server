@@ -53,7 +53,7 @@ export class ToonRepository extends Repository<Toon> {
     });
   }
 
-  async getToonById(
+  async getToonDetailById(
     getToonDetail: GetToonDetailConfig,
   ): Promise<CommonResponseDto> {
     const {
@@ -103,6 +103,15 @@ export class ToonRepository extends Repository<Toon> {
       this.response = new CommonResponseDto(200, true, '성공', [toonDetail]);
       return this.response;
     }
+  }
+
+  async getToonById(ids: Array<number> = []): Promise<ToonConfig[]> {
+    const query = this.createQueryBuilder('toon');
+    const toons: ToonConfig[] = await query
+      .leftJoinAndSelect('toon.tag', 'tag')
+      .where('toon.id IN (:...ids)', { ids: ids })
+      .getMany();
+    return toons;
   }
 
   async getRecentToons(): Promise<CommonResponseDto> {
@@ -258,5 +267,11 @@ export class ToonRepository extends Repository<Toon> {
       }
     }
     return storageIds;
+  }
+
+  async getToonsWithBanner() {
+    return await this.createQueryBuilder('toon')
+      .leftJoinAndSelect('toon.toonToBanners', 'toonToBanners')
+      .getRawMany();
   }
 }

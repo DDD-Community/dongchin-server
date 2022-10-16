@@ -143,7 +143,7 @@ export class ToonController {
     @Param('nickName') nickName: string,
     @Param('toonId', ParseIntPipe) toonId: number,
   ): Promise<CommonResponseDto> {
-    return this.toonService.getToonById(nickName, toonId);
+    return this.toonService.getToonDetailById(nickName, toonId);
   }
 
   //POST 인툰 생성

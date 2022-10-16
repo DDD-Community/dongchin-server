@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   UsePipes,
   ValidationPipe,
@@ -11,19 +10,14 @@ import {
 import {
   ApiBody,
   ApiCreatedResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  responseBannerDto,
-  responseBannerListDto,
-  responseFailDto,
-  responseListDto,
-} from '../api/globalDTO';
+import { responseBannerDto } from '../api/globalDTO';
 import { BannerService } from './banner.service';
-import { BannerDto } from './dto/banner.dto';
+import { BannerCredentialDto } from './dto/banner-create.dto';
+import { BannerListDto } from './dto/banner-list.dto';
 
 @ApiTags('banners')
 @Controller('banners')
@@ -31,29 +25,45 @@ export class BannerController {
   constructor(private bannerService: BannerService) {}
 
   @ApiOperation({ summary: '배너 생성' })
-  @ApiBody({ type: BannerDto })
+  @ApiBody({ type: BannerCredentialDto })
   @ApiCreatedResponse({
     description: '배너 생성 성공',
     type: responseBannerDto,
   })
   @Post('/create') // 배너 생성
   @UsePipes(ValidationPipe)
-  createBanner(@Body() bannerDto: BannerDto) {
+  createBanner(@Body() bannerDto: BannerCredentialDto) {
     return this.bannerService.createBanner(bannerDto);
   }
 
-  @ApiOperation({ summary: '배너 전체 목록' })
-  @ApiNotFoundResponse({
-    description: '배너 가져오기 실패',
-    type: responseFailDto,
-  })
+  @ApiOperation({ summary: '고양이 배너' })
   @ApiOkResponse({
-    description: '배너 목록 가져오기 성공',
-    type: responseBannerListDto,
+    description: '고양이 배너 가져오기 성공',
+    type: BannerListDto,
   })
-  @Get()
-  getAllBanners() {
-    return this.bannerService.getAllBanners();
+  @Get('/cat')
+  getToonsByCatBanner() {
+    return this.bannerService.getToonsByCatBanner();
+  }
+
+  @ApiOperation({ summary: '직장인 배너' })
+  @ApiOkResponse({
+    description: '직장인 배너 가져오기 성공',
+    type: BannerListDto,
+  })
+  @Get('/salaryman')
+  getToonsBySalaryBanner() {
+    return this.bannerService.getToonsBySalaryBanner();
+  }
+
+  @ApiOperation({ summary: '힐링 배너' })
+  @ApiOkResponse({
+    description: '힐링 배너 가져오기 성공',
+    type: BannerListDto,
+  })
+  @Get('/healing')
+  getToonsByHealingBanner() {
+    return this.bannerService.getToonsByHealingBanner();
   }
 
   @ApiOperation({ summary: '랜덤 배너 API' })
@@ -93,19 +103,5 @@ export class BannerController {
   @Get('/random/:nickName')
   getAllToonsByRandom(@Param('nickName') nickName: string) {
     return this.bannerService.getAllToonsByRandom(nickName);
-  }
-
-  @ApiOperation({ summary: 'Bannder Id에 따른 인스타툰 목록 가져오기' })
-  @ApiNotFoundResponse({
-    description: '배너 Id를 찾을 수 없습니다.',
-    type: responseFailDto,
-  })
-  @ApiOkResponse({
-    description: '배너에 따른 인스타툰 리스트',
-    type: responseListDto,
-  })
-  @Get('/:id')
-  getAllToonsByBanner(@Param('id', ParseIntPipe) id: number) {
-    return this.bannerService.getAllToonsByBanner(id);
   }
 }
