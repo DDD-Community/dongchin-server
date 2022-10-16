@@ -29,6 +29,7 @@ async function bootstrapServer(): Promise<Server> {
     SwaggerSetup(nestApp);
     nestApp.useStaticAssets(resolve('./src/public'));
     nestApp.setBaseViewsDir(resolve('./src/views'));
+    nestApp.use('/static', express.static('./src/views'));
     nestApp.setViewEngine('hbs');
     nestApp.useGlobalFilters(new HttpExceptionFilter());
     await nestApp.init();
