@@ -6,7 +6,6 @@ import { BannerCredentialDto } from './dto/banner-create.dto';
 import { ToonConfig } from 'src/toon/config/type.config';
 import { BannerListDto } from './dto/banner-list.dto';
 import { ToonService } from 'src/toon/toon.service';
-import { BannerToon } from './dto/banner.dto';
 
 @Injectable()
 export class BannerService {
@@ -81,13 +80,7 @@ export class BannerService {
   }
 
   pushToonsToBanner(bannerObject: BannerListDto, toons: ToonConfig[]) {
-    toons.forEach((toon) => {
-      const tagIds: Array<number> = [];
-      toon.tag.forEach((info) => {
-        if (info.category === 'subject') tagIds.push(info.id);
-      });
-      bannerObject.addToons(new BannerToon(toon.imgUrl, toon.id, tagIds));
-    });
+    bannerObject.addToons(toons);
   }
 
   async pushToonIds(id: number) {
