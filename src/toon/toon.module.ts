@@ -38,5 +38,6 @@ import { StorageRepository } from 'src/repository/storage.repository';
   ],
   controllers: [ToonController],
   providers: [ToonService],
+  exports: [ToonService, TypeOrmModule],
 })
 export class ToonModule {}
