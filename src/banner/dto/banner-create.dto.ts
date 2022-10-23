@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
-export class BannerDto {
+export class BannerCredentialDto {
   // Banner DTO
   @ApiProperty()
   @IsString()

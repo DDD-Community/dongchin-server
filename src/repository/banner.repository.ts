@@ -1,11 +1,11 @@
 import { Logger } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { Banner } from '../entity/banner.entity';
-import { BannerDto } from '../banner/dto/banner.dto';
+import { BannerCredentialDto } from '../banner/dto/banner-create.dto';
 
 @EntityRepository(Banner)
 export class BannerRepository extends Repository<Banner> {
-  async createBanner(bannerDto: BannerDto) {
+  async createBanner(bannerDto: BannerCredentialDto) {
     const { name } = bannerDto;
     const banner = this.create({ name });
 

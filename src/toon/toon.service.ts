@@ -12,7 +12,11 @@ import { HashTag } from '../entity/hashtag.entity';
 import { Toon } from '../entity/toon.entity';
 import { CommonResponseDto } from 'src/api/common-response.dto';
 import { RecommnededRepository } from 'src/repository/recommended.repository';
-import { GetToonDetailConfig, RecommendConfig } from './config/type.config';
+import {
+  GetToonDetailConfig,
+  RecommendConfig,
+  ToonConfig,
+} from './config/type.config';
 import { StorageRepository } from 'src/repository/storage.repository';
 import { NicknameRepository } from 'src/repository/nickname.repository';
 @Injectable()
@@ -63,7 +67,7 @@ export class ToonService {
     return this.toonRepository.getPopularList();
   }
   // 인스타툰 상세 정보 가져오기
-  async getToonById(
+  async getToonDetailById(
     nickName: string,
     toonId: number,
   ): Promise<CommonResponseDto> {
@@ -74,9 +78,12 @@ export class ToonService {
       nicknameRepository: this.nicknameRepository,
       storageRepository: this.storageRepository,
     };
-    return this.toonRepository.getToonById(getToonDetail);
+    return this.toonRepository.getToonDetailById(getToonDetail);
   }
 
+  async getToonById(ids: Array<number>): Promise<ToonConfig[]> {
+    return this.toonRepository.getToonById(ids);
+  }
   // 추천하기 추가
   async patchRecommended(
     recommendConfig: RecommendConfig,
