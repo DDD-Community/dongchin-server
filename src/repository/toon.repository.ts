@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { ToonDto } from '../toon/dto/toon-create.dto';
 import { Toon } from '../entity/toon.entity';
@@ -13,10 +13,6 @@ import {
 } from 'src/toon/config/type.config';
 import { Nickname } from 'src/entity/nickname.entity';
 
-export interface ToonFindAllOptions {
-  input?: string;
-  tagIds?: number[];
-}
 @EntityRepository(Toon)
 export class ToonRepository extends Repository<Toon> {
   private response: CommonResponseDto;
@@ -57,7 +53,7 @@ export class ToonRepository extends Repository<Toon> {
     });
   }
 
-  async getToonById(
+  async getToonDetailById(
     getToonDetail: GetToonDetailConfig,
   ): Promise<CommonResponseDto> {
     const {
@@ -107,6 +103,15 @@ export class ToonRepository extends Repository<Toon> {
       this.response = new CommonResponseDto(200, true, '성공', [toonDetail]);
       return this.response;
     }
+  }
+
+  async getToonById(ids: Array<number> = []): Promise<ToonConfig[]> {
+    const query = this.createQueryBuilder('toon');
+    const toons: ToonConfig[] = await query
+      .leftJoinAndSelect('toon.tag', 'tag')
+      .where('toon.id IN (:...ids)', { ids: ids })
+      .getMany();
+    return toons;
   }
 
   async getRecentToons(): Promise<CommonResponseDto> {
@@ -264,17 +269,9 @@ export class ToonRepository extends Repository<Toon> {
     return storageIds;
   }
 
-  async findAll(options: ToonFindAllOptions = {}) {
-    const { input, tagIds } = options;
-    console.log(input);
-    console.log(tagIds);
-    const qb = this.createQueryBuilder('toon').leftJoinAndSelect(
-      'toon.tag',
-      'tag',
-    );
-    const tag = [1];
-    qb.andWhere('tag.id IN (:...tag)', { tag });
-    const [items, total] = await qb.getManyAndCount();
-    return { items, total };
+  async getToonsWithBanner() {
+    return await this.createQueryBuilder('toon')
+      .leftJoinAndSelect('toon.toonToBanners', 'toonToBanners')
+      .getRawMany();
   }
 }

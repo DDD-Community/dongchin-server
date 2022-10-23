@@ -5,7 +5,8 @@ import { BannerController } from './banner.controller';
 import { BannerRepository } from '../repository/banner.repository';
 import { BannerService } from './banner.service';
 import { ToonToBannerRepository } from '../repository/toonToBanner.repository';
-import { RecommnededRepository } from 'src/repository/recommended.repository';
+import { ToonService } from 'src/toon/toon.service';
+import { ToonModule } from 'src/toon/toon.module';
 
 @Module({
   imports: [
@@ -14,10 +15,10 @@ import { RecommnededRepository } from 'src/repository/recommended.repository';
       BannerRepository,
       ToonRepository,
       ToonToBannerRepository,
-      RecommnededRepository,
     ]),
+    ToonModule,
   ],
   controllers: [BannerController],
-  providers: [BannerService],
+  providers: [BannerService, ToonService],
 })
 export class BannerModule {}
