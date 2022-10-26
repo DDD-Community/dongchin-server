@@ -48,6 +48,7 @@ export class BannerService {
     const ids: Array<number> = await this.pushToonIds(2);
     const toons: ToonConfig[] = await this.getToonByIds(ids);
     this.pushToonsToBanner(catBannerList, toons);
+    Logger.log(JSON.stringify(catBannerList));
     return catBannerList;
   }
 
@@ -60,6 +61,7 @@ export class BannerService {
     const ids: Array<number> = await this.pushToonIds(3);
     const toons: ToonConfig[] = await this.getToonByIds(ids);
     this.pushToonsToBanner(healingBannerList, toons);
+    Logger.log(JSON.stringify(healingBannerList));
     return healingBannerList;
   }
 
@@ -72,6 +74,7 @@ export class BannerService {
     const ids: Array<number> = await this.pushToonIds(4);
     const toons: ToonConfig[] = await this.getToonByIds(ids);
     this.pushToonsToBanner(salaryBannerList, toons);
+    Logger.log(JSON.stringify(salaryBannerList));
     return salaryBannerList;
   }
 

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsString } from 'class-validator';
 import { ToonConfig } from 'src/toon/config/type.config';
+import { ToonConfigDto } from 'src/toon/dto/toon-config.dto';
 
 export class BannerListDto {
   @ApiProperty({ description: '배너 이름' })
@@ -12,8 +13,8 @@ export class BannerListDto {
   private readonly bannerUrl: string;
 
   @IsArray()
-  @ApiProperty({ description: '해당 배너 툰 list' })
-  private toons: Array<ToonConfig>;
+  @ApiProperty({ description: '해당 배너 툰 list', type: ToonConfigDto })
+  private toons: Array<ToonConfigDto>;
 
   constructor(name: string, bannerUrl: string) {
     this.name = name;
@@ -22,7 +23,22 @@ export class BannerListDto {
   }
 
   addToons(toons: Array<ToonConfig> = []) {
-    this.toons = toons;
+    toons.forEach((toon) => {
+      this.toons.push(
+        new ToonConfigDto(
+          toon.id,
+          toon.authorName,
+          toon.instagramId,
+          toon.description,
+          toon.imgUrl,
+          toon.instagramUrl,
+          toon.htmlUrl,
+          toon.likeCount,
+          toon.createAt,
+          toon.tag,
+        ),
+      );
+    });
   }
 
   getToons() {
