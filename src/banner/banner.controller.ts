@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   UsePipes,
   ValidationPipe,
@@ -14,10 +15,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { CommonResponseDto } from 'src/api/common-response.dto';
 import { responseBannerDto } from '../api/globalDTO';
 import { BannerService } from './banner.service';
 import { BannerCredentialDto } from './dto/banner-create.dto';
-import { BannerListDto } from './dto/banner-list.dto';
 
 @ApiTags('banners')
 @Controller('banners')
@@ -36,34 +37,26 @@ export class BannerController {
     return this.bannerService.createBanner(bannerDto);
   }
 
-  @ApiOperation({ summary: '고양이 배너' })
+  @ApiOperation({ summary: '배너 리스트' })
   @ApiOkResponse({
-    description: '고양이 배너 가져오기 성공',
-    type: BannerListDto,
+    description: '배너 리스트',
+    type: CommonResponseDto,
   })
-  @Get('/cat')
-  getToonsByCatBanner() {
-    return this.bannerService.getToonsByCatBanner();
+  @Get('/list')
+  getBanners() {
+    return this.bannerService.getBanners();
   }
 
-  @ApiOperation({ summary: '직장인 배너' })
+  @ApiOperation({ summary: '배너 상세 정보' })
   @ApiOkResponse({
-    description: '직장인 배너 가져오기 성공',
-    type: BannerListDto,
+    description: '배너 상세 정보',
+    type: CommonResponseDto,
   })
-  @Get('/salaryman')
-  getToonsBySalaryBanner() {
-    return this.bannerService.getToonsBySalaryBanner();
-  }
-
-  @ApiOperation({ summary: '힐링 배너' })
-  @ApiOkResponse({
-    description: '힐링 배너 가져오기 성공',
-    type: BannerListDto,
-  })
-  @Get('/healing')
-  getToonsByHealingBanner() {
-    return this.bannerService.getToonsByHealingBanner();
+  @Get('/:id')
+  getToonsByCatBanner(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<CommonResponseDto> {
+    return this.bannerService.getBannerDetail(id);
   }
 
   @ApiOperation({ summary: '랜덤 배너 API' })
