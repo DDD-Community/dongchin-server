@@ -107,11 +107,15 @@ export class ToonRepository extends Repository<Toon> {
 
   async getToonById(ids: Array<number> = []): Promise<ToonConfig[]> {
     const query = this.createQueryBuilder('toon');
-    const toons: ToonConfig[] = await query
-      .leftJoinAndSelect('toon.tag', 'tag')
-      .where('toon.id IN (:...ids)', { ids: ids })
-      .getMany();
-    return toons;
+    try {
+      const toons: ToonConfig[] = await query
+        .leftJoinAndSelect('toon.tag', 'tag')
+        .where('toon.id IN (:...ids)', { ids: ids })
+        .getMany();
+      return toons;
+    } catch (error) {
+      throw new BadRequestException('잘못된 id입니다.');
+    }
   }
 
   async getRecentToons(): Promise<CommonResponseDto> {

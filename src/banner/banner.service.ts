@@ -1,4 +1,9 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ToonRepository } from '../repository/toon.repository';
 import { BannerRepository } from '../repository/banner.repository';
@@ -6,12 +11,17 @@ import { BannerCredentialDto } from './dto/banner-create.dto';
 import { ToonConfig } from 'src/toon/config/type.config';
 import { BannerListDto } from './dto/banner-list.dto';
 import { ToonService } from 'src/toon/toon.service';
+import { CommonResponseDto } from 'src/api/common-response.dto';
 
+const HEALING_URL = `${process.env.HEALING_URL}`;
+const CAT_URL = `${process.env.CAT_URL}`;
+const SALARY_URL = `${process.env.SALARY_URL}`;
 @Injectable()
 export class BannerService {
-  private HEALING_URL = `${process.env.HEALING_URL}`;
-  private CAT_URL = `${process.env.CAT_URL}`;
-  private SALARY_URL = `${process.env.SALARY_URL}`;
+  private readonly catBannerList: BannerListDto;
+  private readonly healingBannerList: BannerListDto;
+  private readonly salaryBannerList: BannerListDto;
+  private readonly bannerMap: any;
   constructor(
     @InjectRepository(BannerRepository)
     private bannerRepository: BannerRepository,
@@ -21,7 +31,16 @@ export class BannerService {
 
     @Inject(ToonService)
     private readonly toonService: ToonService,
-  ) {}
+  ) {
+    this.catBannerList = new BannerListDto(2, '고양이툰 배너', CAT_URL);
+    this.healingBannerList = new BannerListDto(3, '힐링툰 배너', HEALING_URL);
+    this.salaryBannerList = new BannerListDto(4, '직장인툰 배너', SALARY_URL);
+    this.bannerMap = {
+      2: this.catBannerList,
+      3: this.healingBannerList,
+      4: this.salaryBannerList,
+    };
+  }
 
   async createBanner(bannerDto: BannerCredentialDto) {
     // 배너 생성
@@ -39,60 +58,54 @@ export class BannerService {
     return await this.toonService.getToonDetailById(nickName, randomToon.id);
   }
 
-  async getToonsByCatBanner(
-    catBannerList: BannerListDto = new BannerListDto(
-      '고양이툰 배너',
-      this.CAT_URL,
-    ),
-  ): Promise<BannerListDto> {
-    const ids: Array<number> = await this.pushToonIds(2);
-    const toons: ToonConfig[] = await this.getToonByIds(ids);
-    this.pushToonsToBanner(catBannerList, toons);
-    return catBannerList;
+  getBanners() {
+    return new CommonResponseDto(200, true, '배너 목록', [
+      this.catBannerList.getInfo(),
+      this.healingBannerList.getInfo(),
+      this.salaryBannerList.getInfo(),
+    ]);
   }
 
-  async getToonsByHealingBanner(
-    healingBannerList: BannerListDto = new BannerListDto(
-      '힐링툰 배너',
-      this.HEALING_URL,
-    ),
-  ): Promise<BannerListDto> {
-    const ids: Array<number> = await this.pushToonIds(3);
+  async getBannerDetail(id: number): Promise<CommonResponseDto> {
+    const ids: Array<number> = await this.pushToonIds(id);
     const toons: ToonConfig[] = await this.getToonByIds(ids);
-    this.pushToonsToBanner(healingBannerList, toons);
-    return healingBannerList;
+    try {
+      const banner: BannerListDto = this.bannerMap[id];
+      this.pushToonsToBanner(banner, toons);
+      Logger.log(JSON.stringify(banner));
+      return new CommonResponseDto(200, true, '해당 배너의 툰 리스트', banner);
+    } catch (error) {
+      Logger.log(error);
+      throw new BadRequestException('잘못된 id입니다.');
+    }
   }
 
-  async getToonsBySalaryBanner(
-    salaryBannerList: BannerListDto = new BannerListDto(
-      '직장인툰 배너',
-      this.SALARY_URL,
-    ),
-  ): Promise<BannerListDto> {
-    const ids: Array<number> = await this.pushToonIds(4);
-    const toons: ToonConfig[] = await this.getToonByIds(ids);
-    this.pushToonsToBanner(salaryBannerList, toons);
-    return salaryBannerList;
-  }
-
-  async getToonByIds(ids: Array<number>) {
-    return await this.toonService.getToonById(ids);
+  async getToonByIds(ids: Array<number>): Promise<ToonConfig[]> {
+    try {
+      return await this.toonService.getToonById(ids);
+    } catch (error) {
+      throw new BadRequestException('잘못된 id입니다.');
+    }
   }
 
   pushToonsToBanner(bannerObject: BannerListDto, toons: ToonConfig[]) {
     bannerObject.addToons(toons);
   }
 
-  async pushToonIds(id: number) {
-    const ids: Array<number> = [];
-    const banner = await this.toonRepository.getToonsWithBanner();
+  async pushToonIds(id: number): Promise<Array<number>> {
+    try {
+      const ids: Array<number> = [];
+      const banner = await this.toonRepository.getToonsWithBanner();
 
-    banner.forEach(async (toon) => {
-      if (toon.toonToBanners_bannerId === id) {
-        ids.push(toon.toon_id);
-      }
-    });
-    Logger.log('ids 배열', ids);
-    return ids;
+      banner.forEach(async (toon) => {
+        if (toon.toonToBanners_bannerId === id) {
+          ids.push(toon.toon_id);
+        }
+      });
+      Logger.log('ids 배열', ids);
+      return ids;
+    } catch (error) {
+      throw new BadRequestException('잘못된 id입니다.');
+    }
   }
 }

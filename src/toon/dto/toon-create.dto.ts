@@ -29,4 +29,22 @@ export class ToonDto {
   @ApiProperty()
   @IsNumber()
   likeCount: number; // 좋아요 수
+
+  constructor(
+    authorName: string,
+    instagramId: string,
+    description: string,
+    imgUrl: string,
+    instagramUrl: string,
+    htmlUrl: string,
+    likeCount: number,
+  ) {
+    (this.authorName = authorName),
+      (this.instagramId = instagramId),
+      (this.description = description),
+      (this.imgUrl = imgUrl),
+      (this.instagramUrl = instagramUrl),
+      (this.htmlUrl = htmlUrl),
+      (this.likeCount = likeCount);
+  }
 }
