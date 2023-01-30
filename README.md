@@ -26,6 +26,7 @@
 ## Architecture (After)
 
 <img src="src/img/After.png"/>
+
 ### **Contributors :sparkles:**
 
 <table>
